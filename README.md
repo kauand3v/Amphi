@@ -11,20 +11,18 @@ Aqui está a documentação completa do seu projeto organizada e formatada como 
 ---
 
 ## 📑 Índice (Table of Contents)
-
-1. [A Origem e a Visão (The Vision)](https://www.google.com/search?q=%23-a-origem-e-a-vis%C3%A3o-the-vision)
-2. [Pré-requisitos (Prerequisites)](https://www.google.com/search?q=%23-pr%C3%A9-requisitos)
-3. [Roadmap de Desenvolvimento](https://www.google.com/search?q=%23%EF%B8%8F-startup-roadmap--roadmap-de-desenvolvimento)
-4. [Detalhamento da Arquitetura (Deep Dive)](https://www.google.com/search?q=%23-detalhamento-da-arquitetura-deep-dive)
-* [Micro-segmentação, Side-Channel e Privacidade](https://www.google.com/search?q=%23-tecnologias-avan%C3%A7adas)
-
-
-5. [Casos de Uso na Prática (In Action)](https://www.google.com/search?q=%23%EF%B8%8F-casos-de-uso-na-pr%C3%A1tica-the-amphi-in-action)
-6. [Ciclo de Vida Operacional e Controle](https://www.google.com/search?q=%23%EF%B8%8F-amphi-ciclo-de-vida-operacional-e-controle)
-7. [Ecossistema de CLI Amphi](https://www.google.com/search?q=%23-amphi-cli-ecosystem--ecossistema-de-cli-amphi)
-8. [Inteligência em Enxame (Swarm Intelligence)](https://www.google.com/search?q=%23-intelig%C3%AAncia-em-enxame-swarm-intelligence)
-9. [Riscos Arquiteturais e Mitigações](https://www.google.com/search?q=%23%EF%B8%8F-architectural-risks--mitigations--riscos-arquiteturais-e-mitiga%C3%A7%C3%B5es)
-
+1. [📖 A Visão (The Vision)](#-a-visão-the-vision)
+2. [⚙️ Pré-requisitos (Prerequisites)](#️-pré-requisitos)
+3. [🗺️ Startup Roadmap / Roadmap de Desenvolvimento](#️-startup-roadmap--roadmap-de-desenvolvimento)
+4. [🏛️ Detalhamento da Arquitetura (Deep Dive - Os 7 Órgãos)](#️-detalhamento-da-arquitetura-deep-dive)
+5. [🔬 Tecnologias Avançadas & Submódulos](#-tecnologias-avançadas)
+6. [🛡️ Integração: Amphi + MorphBPF (Hardware-Agnostic Defense)](#️-integração-amphi--morphbpf-hardware-agnostic-defense)
+7. [🐕 Cerberus-Core — Amphi Ecosystem](#-cerberus-core--amphi-ecosystem)
+8. [💎 AmphiLang: The Vertical Engine](#-amphilang-the-vertical-engine--o-motor-vertical)
+9. [🧠 Human-in-the-Loop: The Glass Box Philosophy](#-human-in-the-loop-the-glass-box-philosophy)
+10. [💻 Ecossistema de CLI & Ciclo de Vida Operacional](#-amphi-cli-ecosystem--ecossistema-de-cli-amphi)
+11. [🧬 Inteligência em Enxame & Casos de Uso](#-inteligência-em-enxame-swarm-intelligence)
+12. [⚖️ Architectural Risks & Mitigations / Riscos e Mitigações](#️-architectural-risks--mitigations--riscos-arquiteturais-e-mitigações)
 ---
 
 ## 📖 A Origem e a Visão (The Vision)
@@ -320,3 +318,79 @@ O Amphi não é apenas local; ele é um Ecossistema Federado.
 
 * **[PT-BR] Risco:** Se a IA comportamental (Brain/Mojo) marcar erroneamente uma atualização massiva de sistema ou um pico de tráfego de vendas como um exploit zero-day, ela pode isolar ou derrubar prematuramente serviços críticos de infraestrutura.
 * **Mitigação:** O ciclo de vida impõe um "Modo de Observação" (monitoramento passivo) sem bloqueio antes de passar para a execução ativa. Além disso, o manifesto principal implementa limites lógicos estritos de "Fail-Safe" onde, se a confiança de classificação da IA cair abaixo de um limite seguro, **o sistema gera alertas de alta prioridade para analistas humanos em vez de executar bloqueios automatizados.**
+
+
+---
+
+# 🐕 Cerberus-Core — Amphi Ecosystem
+
+## 📌 O Significado do Nome: O Guardião do Kernel | The Kernel Guardian
+
+### [PT-BR]
+Na mitologia grega, Cérbero (Cerberus) é o monstruoso cão de três cabeças que guarda os portões do submundo, garantindo que ninguém entre sem permissão e ninguém escape. No ecossistema Amphi, o Cerberus-Core assume exatamente essa função. Ele atua como o cão de guarda supremo e inabalável do Kernel do Sistema Operacional. Suas três cabeças representam as três dimensões analíticas que ele monitora simultaneamente, criando uma "prisão triangular" para qualquer ameaça:
+* **Primeira Cabeça (Rede/Lógica):** Vigia o estado e o contexto dos fluxos de dados.
+* **Segunda Cabeça (CPU/Física):** Vigia o comportamento e o estresse do hardware em nível de silício.
+* **Terceira Cabeça (Memória/Imunidade):** Vigia a integridade interna para garantir que a própria defesa nunca seja corrompida.
+
+### [EN]
+In Greek mythology, Cerberus is the monstrous three-headed hound that guards the gates of the underworld, ensuring no one enters without permission and no one escapes. Within the Amphi ecosystem, Cerberus-Core serves exactly this purpose. It acts as the ultimate, unyielding watchdog of the Operating System Kernel. Its three heads represent the three analytical dimensions it continuously monitors, establishing a "triangular prison" for any threat:
+* **First Head (Network/Logic):** Watches the state and context of data flows.
+* **Second Head (CPU/Physics):** Watches the behavior and stress of hardware at the silicon level.
+* **Third Head (Memory/Immunity):** Watches internal integrity to ensure the defense itself is never compromised.
+
+---
+
+## ⚙️ Arquitetura Interna: Como as Três Cabeças Funcionam | Internal Architecture
+
+O Cerberus-Core não é apenas um filtro; é um organismo autônomo. Ele opera cruzando telemetria de três submódulos críticos que vivem entre o *kernel-space* e o *user-space*:
+
+### 1. `flow_state` (Rastreamento de Estado - A Rede | Stateful Tracking - The Network)
+* **[PT-BR]** O eBPF tradicional é *stateless* (analisa pacotes isolados). O Cerberus resolve isso injetando mapas de alta performance (*Shared Maps*). Cada conexão ganha um ciclo de vida persistente, permitindo que o Amphi identifique ataques fracionados em milhares de pacotes e exfiltrações "*low-and-slow*".
+* **[EN]** Traditional eBPF is stateless. Cerberus overcomes this by injecting high-performance memory structures (Shared Maps). Every connection is given a persistent lifecycle, allowing Amphi to piece together fragmented exploits and detect "low-and-slow" exfiltration attempts.
+
+### 2. `hardware_pmu` (Inspeção de Canal Lateral - A CPU | Side-Channel Inspection - The CPU)
+* **[PT-BR]** Malwares modernos ofuscam código para burlar assinaturas. O Cerberus ignora a assinatura e foca na física. Através dos PMCs (*Performance Monitoring Counters*), ele lê diretamente do processador. Se um *payload* ofuscado tentar se descompactar, ele gerará picos absurdos de *Cache-Misses* e *Branch Mispredictions*. A anomalia é pega antes da execução.
+* **[EN]** Modern malware obfuscates code to evade signatures. Cerberus ignores the signature and focuses on physics. By reading the PMCs (Performance Monitoring Counters) directly from the processor, it detects when an obfuscated payload attempts to unpack itself, causing drastic spikes in Cache-Misses and Branch Mispredictions. The anomaly is caught before execution.
+
+### 3. `self_guard` (Sentinela de Memória - A Autodefesa | Memory Sentinel - The Self-Defense)
+* **[PT-BR]** Se o invasor tentar atacar a própria engine (via injeção de *heap* ou *buffer overflow*), o Cerberus se defende. Ele utiliza *Guard Pages* e validação criptográfica (HMAC) ao redor de suas tabelas e ponteiros. Qualquer escrita não autorizada resulta em bloqueio instantâneo do atacante.
+* **[EN]** Should an attacker target the engine itself (via heap injection or buffer overflows), Cerberus strikes back. It surrounds its tables and pointers with Guard Pages and runtime cryptographic validation (HMAC). Any unauthorized write attempt instantly locks the attacker out.
+
+---
+
+## 💻 A Interface de Comando: O `cb` CLI | The Command Interface
+
+Para gerenciar essa complexidade de nível de kernel, o Cerberus utiliza um protocolo de comandos DevOps de alta eficiência acionado pelo prefixo `cb`. Os comandos são gatilhos que atualizam os mapas eBPF e se comunicam assincronamente com o Orquestrador através de UNIX sockets:
+
+* **`cb run`**: Inicia a engine. Executa a validação de privilégios (*root*), checa a assinatura dos binários, carrega as regras via MorphBPF para contornar problemas de hardware (*NIC offsets*) e acorda as três cabeças simultaneamente. / *Bootstraps the engine. Validates root privileges, checks signatures, loads rules via MorphBPF, and awakens all three heads.*
+* **`cb status`**: Consulta os anéis de buffer (*Ring Buffers*) do kernel e devolve telemetria limpa e imediata (conexões rastreadas, estresse de CPU, integridade de memória). / *Queries the kernel's Ring Buffers and returns immediate telemetry.*
+* **`cb watch`**: Abre uma visão em tempo real focada na identificação de anomalias (similar ao `htop`, mas voltado para caça de ameaças ativas). / *Opens a real-time monitoring view tailored for anomaly identification.*
+* **`cb freeze <PID>`**: Comando de reflexo e contenção profunda. Não mata o processo (o que destruiria provas em memória), mas usa *Cgroups v2* para limitar a CPU do atacante a 1%, "congelando-o" para análise forense. / *A deep-containment reflex command. Throttles the attacker's CPU usage to 1% using Cgroups v2 instead of killing it.*
+
+---
+
+## 🕸️ Integração com o Amphi Inteiro / Integration
+
+* **Entrada (MorphBPF):** Ajusta os pacotes independentemente de qual placa de rede (Intel, Mellanox) o servidor usa e os envia limpos ao `flow_state`.
+* **Correlação (`cerberus_orchestrator`):** Avalia os dados em nanossegundos. Se a Rede for anômala E a CPU der picos de erros físicos = Ataque Confirmado.
+* **Decisão Neural (Brain/Mojo):** Toda essa telemetria física e lógica alimenta os tensores do motor em Mojo. O Amphi usa isso para treinar sua Inteligência de Enxame via Aprendizado por Reforço Inverso (IRL), distribuindo a "vacina" para toda a rede antes que o ataque se repita.
+* **Linguagens Dominantes:** Rust (80%) para segurança de memória nativa e orquestração assíncrona; C++ (20%) para acesso direto e de zero-latência às APIs de monitoramento físico do Linux (`perf_event_open`).
+
+---
+
+## 💎 AmphiLang: The Vertical Engine | O Motor Vertical
+
+* **Verifier-Aware:** A linguagem garante matematicamente que o código gerado será aceito pelo *Kernel Verifier*. Chega de "tentativa e erro" no eBPF.
+* **Stateful Security:** Monitoramento de fluxos de rede persistentes, identificando ataques lentos (*low-and-slow*) que firewalls comuns ignoram.
+* **Performance Absoluta:** Compilação direta via MLIR para eBPF *Bytecode*, unindo abstração de alto nível com a brutalidade do silício.
+
+---
+
+## ⚙️ The Dual Nature: Language & Runtime | A Natureza Dual: Linguagem e Runtime
+
+* **[PT-BR]** O Amphi funciona através da simbiose entre dois componentes que operam em camadas distintas:
+  * **Como Linguagem (AmphiLang):** O nível de abstração (*Compiler Front-end*). Escreve-se lógica em sintaxe declarativa; o compilador MLIR garante que o programa seja livre de bugs de memória.
+  * **Como Programa (Cerberus-Core):** O *Runtime* (*Execution Engine*). Binário em Rust de alta performance que carrega o bytecode, gerencia a IA (Mojo) e orquestra a mitigação.
+* **[EN]** Amphi functions through the symbiosis of two components operating at distinct layers:
+  * **As a Language (AmphiLang):** The abstraction layer (Compiler Front-end). Logic is written in declarative syntax; the MLIR compiler ensures the program is free of memory bugs.
+  * **As a Program (Cerberus-Core):** The Runtime (Execution Engine). A high-performance Rust binary that loads the bytecode, manages the AI (Mojo), and orchestrates mitigation.
