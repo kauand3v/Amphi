@@ -1,12 +1,11 @@
-Aqui está a documentação completa do seu projeto organizada e formatada como um arquivo `README.md` estruturado, profissional e pronto para uso no GitHub ou GitLab. Completei também a última frase que havia sido cortada no seu prompt.
-
----
-
 # 🛡️ Amphi: The Black Box
 
 > **The Autonomous Immune System for Critical Infrastructures | O Sistema Imunológico Autônomo para Infraestruturas Críticas**
 
- *(Substitua por um link para sua logo real)*
+<p align="center">
+  <img src="logo_2.png" alt="Amphi Logo" width="600">
+</p>
+
 
 ---
 
