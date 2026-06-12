@@ -3,7 +3,7 @@
 > **The Autonomous Immune System for Critical Infrastructures | O Sistema Imunológico Autônomo para Infraestruturas Críticas**
 
 <p align="center">
-  <img src="logo.png" alt="Amphi Logo" width="600">
+  <img src="assets/logo.png" alt="Amphi Logo" width="600">
 </p>
 
 
