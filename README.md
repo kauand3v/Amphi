@@ -393,3 +393,335 @@ Para gerenciar essa complexidade de nível de kernel, o Cerberus utiliza um prot
 * **[EN]** Amphi functions through the symbiosis of two components operating at distinct layers:
   * **As a Language (AmphiLang):** The abstraction layer (Compiler Front-end). Logic is written in declarative syntax; the MLIR compiler ensures the program is free of memory bugs.
   * **As a Program (Cerberus-Core):** The Runtime (Execution Engine). A high-performance Rust binary that loads the bytecode, manages the AI (Mojo), and orchestrates mitigation.
+
+
+---
+
+
+Aqui está. O **README COMPLETO E DEFINITIVO**. Ele une a **visão do "Nunca mais seja acordado às 3h"** com a **explicação técnica completa** do ecossistema Amphi/KORE Platform, mostrando como a auto-cura e a segurança autônoma funcionam na prática.
+
+---
+
+# 🛡️ Amphi / KORE Platform: The 3 AM Immune System
+### *"Never be woken up at 3 AM by a false alarm again."* 
+### *"Nunca mais seja acordado às 3h da manhã por um falso alarme."*
+
+<div align="center">
+  
+![Rust](https://img.shields.io/badge/Rust-1.70+-000000?style=for-the-badge&logo=rust)
+![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=for-the-badge&logo=go)
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python)
+![eBPF](https://img.shields.io/badge/eBPF-Kernel_Level-FF6B6B?style=for-the-badge)
+![Mojo](https://img.shields.io/badge/Mojo-AI_Predictive-FF4500?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
+
+**Stop configuring alerts. Start growing an immune system.**  
+**Pare de configurar alertas. Comece a cultivar um sistema imunológico.**
+
+</div>
+
+---
+
+## 📑 Table of Contents / Índice
+- [🇧🇷 Português](#-português)
+  - [O Problema: O Pânico das 3h da Manhã](#o-problema-o-pânico-das-3h-da-manhã)
+  - [A Solução: Um Sistema Imunológico, Não um Pager](#a-solução-um-sistema-imunológico-não-um-pager)
+  - [Arquitetura: Amphi é o Kernel, KORE é o Corpo](#arquitetura-amphi-é-o-kernel-kore-é-o-corpo)
+  - [O Loop de Auto-Cura (OODA)](#o-loop-de-auto-cura-ooda)
+  - [A Matriz de Decisão (Auto vs. Manual)](#a-matriz-de-decisão-auto-vs-manual)
+  - [Componentes do Ecossistema](#componentes-do-ecossistema)
+  - [Como Instalar](#como-instalar)
+  - [A Promessa das 3h](#a-promessa-das-3h)
+- [🇺🇸 English](#-english)
+  - [The Problem: The 3 AM Panic](#the-problem-the-3-am-panic)
+  - [The Solution: An Immune System, Not a Pager](#the-solution-an-immune-system-not-a-pager)
+  - [Architecture: Amphi is the Kernel, KORE is the Body](#architecture-amphi-is-the-kernel-kore-is-the-body)
+  - [The Self-Healing Loop (OODA)](#the-self-healing-loop-ooda)
+  - [The Decision Matrix (Auto vs. Manual)](#the-decision-matrix-auto-vs-manual)
+  - [Ecosystem Components](#ecosystem-components)
+  - [How to Install](#how-to-install)
+  - [The 3 AM Promise](#the-3-am-promise)
+
+---
+
+# 🇧🇷 Português
+
+## O Problema: O Pânico das 3h da Manhã
+Você conhece essa cena.
+
+São 3h da manhã. Seu telefone vibra violentamente na cabeceira da cama. É o monitoramento. "ALERTA CRÍTICO: CPU acima de 90% no servidor de produção." Seu coração dispara. Você levanta cambaleando, abre o laptop com os olhos ardendo de sono, acessa o dashboard, e... o sistema já voltou ao normal. Foi um pico de 5 segundos. Ou um deploy mal feito que já foi rollbackado. Ou simplesmente um falso alarme.
+
+**O problema não é a falha. O problema é a ineficiência do alerta.** Você perdeu o sono, perdeu a concentração no dia seguinte, perdeu a confiança na ferramenta e, pior de tudo: **perdeu a confiança em si mesmo** para resolver problemas reais quando eles aparecerem.
+
+## A Solução: Um Sistema Imunológico, Não um Pager
+O **Amphi / KORE Platform** não é mais uma ferramenta de monitoramento. É um **organismo digital autônomo**.
+
+Ele não apenas "observa" e "avisa". Ele:
+- **Observa** (no nível do Kernel, via eBPF).
+- **Orienta** (entende se é um ataque, um pico normal ou um vazamento).
+- **Decide** (baseado em regras que você define).
+- **Age** (corrige o problema sozinho, em nanossegundos).
+- **Notifica** (te avisa apenas quando você é realmente necessário).
+
+**Se o sistema pode resolver sozinho, ele resolve e te manda uma mensagem de manhã.**  
+**Se o sistema não pode resolver sozinho, ele contém o dano e te acorda com um relatório forense completo.**
+
+Você não é mais um bombeiro. Você é um arquiteto.
+
+## Arquitetura: Amphi é o Kernel, KORE é o Corpo
+O **Amphi** é o Sistema Nervoso e Imunológico que reside dentro do Kernel do Linux. Ele enxerga cada chamada de sistema (syscall), cada pacote de rede, cada instrução do processador e cada mudança de estado da memória.
+
+A **KORE Platform** é a camada funcional que vem **EMBUTIDA** dentro do Amphi. Ela é composta por módulos de alto nível que transformam o poder bruto do Kernel em serviços de negócio prontos para uso.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    USER INTERFACE (React / Next.js)                         │
+│                    Admin Portal & Monitoring Dashboard                      │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                    KORE PLATFORM (User-Space Layer)                   │  │
+│  │                  (Nativamente compilada no runtime do Amphi)          │  │
+│  │  ┌───────────────┐  ┌───────────────┐  ┌───────────────────────────┐ │  │
+│  │  │  KORE AI      │  │  TENENTIS OS  │  │  LUME-GATEWAY             │ │  │
+│  │  │  LLM Agents   │  │  Multi-Tenant │  │  Rate Limit, Circuit Br.  │ │  │
+│  │  │  RAG Pipeline │  │  RLS/JSONB    │  │  GeoIP, Auth              │ │  │
+│  │  └───────────────┘  └───────────────┘  └───────────────────────────┘ │  │
+│  │  ┌───────────────────────────────────────────────────────────────────┐│  │
+│  │  │  DRIFTGUARD (Observabilidade Cognitiva / FinOps / GreenOps)       ││  │
+│  │  └───────────────────────────────────────────────────────────────────┘│  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                     │ (FFI / Zero-Copy IPC)                 │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                    AMPHI CORE (Kernel-Space Layer)                    │  │
+│  │                    O Sistema Imunológico Autônomo                     │  │
+│  │  ┌───────────────────────────────────────────────────────────────────┐│  │
+│  │  │  NERVES (eBPF/C)    │  FILTER (C++)    │  BRAIN (Mojo/IRL)      ││  │
+│  │  │  Syscall/Network/   │  Line-Rate       │  Behavioral Predictions││  │
+│  │  │  Disk Monitoring    │  Noise Reduction │  Zero-Day Detection     ││  │
+│  │  ├────────────────────┼──────────────────┼─────────────────────────┤│  │
+│  │  │  ENFORCER (Rust)   │  GHOST (Go)      │  MEMORY (TS/SQL)        ││  │
+│  │  │  Cgroups v2        │  MTD/Honeypots   │  Forensics "Black Box"  ││  │
+│  │  │  Throttling/Kill   │  Deception Ops   │  Digital Twin Replay    ││  │
+│  │  └───────────────────────────────────────────────────────────────────┘│  │
+│  │  🔒 HARDWARE ROOT OF TRUST (TPM 2.0 / HSM) - Fail-Closed Security    │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## O Loop de Auto-Cura (OODA)
+O sistema opera em um ciclo fechado de **Observar, Orientar, Decidir, Agir e Notificar**.
+
+| Estágio | Componente | Ação |
+| :--- | :--- | :--- |
+| **1. Observar** | Amphi (Nerves/eBPF) & DriftGuard | Coleta dados brutos de hardware, rede e sistema. |
+| **2. Orientar** | Amphi (Brain/Mojo) & DriftGuard (ML) | Classifica a anomalia: ataque, vazamento de memória, pico de tráfego ou degradação de performance. |
+| **3. Decidir** | KORE (Decision Engine) | Consulta o arquivo `rules.yaml` e define se a ação será automática ou manual. |
+| **4. Agir** | Amphi (Enforcer/Rust) & Lume (Go) | Executa a ação: isola o processo (Cgroups), bloqueia o IP, reinicia o serviço ou escala o pod. |
+| **5. Notificar** | KORE (Telegram/Slack) | Envia uma mensagem com o nível de gravidade e o que foi feito. |
+
+## A Matriz de Decisão (Auto vs. Manual)
+O coração da promessa "3 AM" é o arquivo `rules.yaml`. Ele define exatamente quando o sistema age sozinho e quando ele te chama.
+
+| Nível | O que significa | Ação do Sistema | Notificação |
+| :--- | :--- | :--- | :--- |
+| **🟢 Baixo** | Pico de CPU rápido ou tráfego momentâneo. | **Ignora.** Nenhuma ação. | **(Silêncio)** |
+| **🟡 Médio** | Vazamento de memória lento ou degradação de performance. | **Auto-Cura.** Reinicia o Pod/Container ou escala horizontalmente. | `🟡 AUTO-CURADO: Pod X reiniciado às 14:32. Estabilidade recuperada.` |
+| **🔴 Alto** | Ataque ransomware, exfiltração de dados ou falha de segurança confirmada (Mojo com 95%+ de confiança). | **Auto-Contenção.** Isola o processo no Cgroups v2, bloqueia o IP no Lume e gera um snapshot forense. **Ação manual obrigatória.** | `🔴 AÇÃO MANUAL REQUERIDA: Ataque contido. IP X.X.X.X bloqueado. Execute 'amphi dump <id>' para análise.` |
+
+### Exemplo de `rules.yaml`:
+```yaml
+rules:
+  # Auto-Heal (Você nem vai saber que aconteceu)
+  - name: "Memory Leak Auto-Heal"
+    source: "driftguard"
+    condition: "memory_usage > 85% AND duration > 5min"
+    action: "restart_pod"
+    notification: "auto"
+
+  # Auto-Containment (Alerta, mas o problema está sob controle)
+  - name: "Ransomware Zero-Day"
+    source: "amphi"
+    condition: "mojo_confidence > 90% AND iops_spike > 1000%"
+    action: "isolate_process_and_block_ip"
+    notification: "manual"
+
+  # Manual Only (Você decide se age)
+  - name: "Suspicious API Call Pattern"
+    source: "lume-gateway"
+    condition: "rate_limit_exceeded AND geoip = 'unknown'"
+    action: "manual_review"
+    notification: "manual"
+```
+
+## Componentes do Ecossistema
+| Componente | Papel | Tecnologia |
+| :--- | :--- | :--- |
+| **Amphi (Kernel)** | Sistema Imunológico Autônomo. Monitora syscalls, rede, hardware e isola ameaças. | Rust, eBPF, C++, Mojo (AI) |
+| **KoreAI** | Inteligência Artificial com agentes autônomos e RAG (busca semântica). | Python, LangChain, Qdrant |
+| **Tenentis OS** | SaaS multi-tenant com isolamento absoluto de dados via RLS no PostgreSQL. | Node.js, PostgreSQL, Redis |
+| **Lume-Gateway** | Orquestrador de tráfego com rate limiting, circuit breaker e GeoIP. | Go |
+| **DriftGuard** | Observabilidade cognitiva, detecção de anomalias, FinOps e GreenOps. | Python, ML, Prometheus |
+| **Decision Engine** | Motor de regras que coordena a auto-cura e as notificações. | Python (Flask) + YAML |
+
+## Como Instalar
+A instalação do Amphi já inclui a KORE Platform. Basta um comando:
+
+```bash
+# Baixe o binário do Amphi
+curl -L https://amphi.io/install.sh | bash
+
+# Inicie o sistema (Kernel + KORE Platform)
+sudo amphi start
+
+# Verifique o status dos serviços
+amphi status --services
+```
+
+### Subindo o Ecossistema Completo com Docker:
+```bash
+git clone https://github.com/kauand3v/kore-platform
+cd kore-platform
+docker-compose -f docker-compose.ecosystem.yml up -d
+```
+
+## A Promessa das 3h
+**Antes:** Alarme toca. Você acorda em pânico. Abre o laptop. Olha os logs. Percebe que foi um falso alarme. Não consegue mais dormir.
+
+**Depois (Com Amphi/KORE):** O sistema detecta o pico. O Brain (Mojo) analisa e decide: "É apenas um pico de tráfego legítimo". O sistema **ignora** e **não te acorda**. De manhã, você toma seu café, abre o dashboard, e vê: *"3 alertas auto-resolvidos durante a noite. Nenhuma ação necessária."*
+
+**Se for grave:** O sistema isola o ataque, bloqueia o invasor e te acorda apenas com o problema já contido. Você resolve com calma, munido de um relatório forense completo.
+
+> **"Você não é mais um bombeiro. Você é um arquiteto."**
+
+---
+
+# 🇺🇸 English
+
+## The Problem: The 3 AM Panic
+You know this scene.
+
+It's 3 AM. Your phone vibrates violently on the nightstand. "CRITICAL ALERT: CPU above 90% on production." Your heart races. You stumble out of bed, open your laptop, access the dashboard, and... the system is already back to normal. False alarm.
+
+**The problem is not the failure. The problem is the inefficiency of the alert.** You lost sleep, focus, and trust in the tool. Worst of all: you lost confidence in yourself to solve real problems when they appear.
+
+## The Solution: An Immune System, Not a Pager
+The **Amphi / KORE Platform** is not another monitoring tool. It is an **autonomous digital organism**.
+
+It doesn't just "observe" and "warn". It:
+- **Observes** (at the Kernel level, via eBPF).
+- **Orients** (understands if it's an attack, a normal spike, or a leak).
+- **Decides** (based on rules you define).
+- **Acts** (fixes the problem itself, in nanoseconds).
+- **Notifies** (only alerts you when you are truly needed).
+
+**If the system can resolve it alone, it does and sends you a message in the morning.**  
+**If the system cannot resolve it alone, it contains the damage and wakes you up with a full forensic report.**
+
+You are no longer a firefighter. You are an architect.
+
+## Architecture: Amphi is the Kernel, KORE is the Body
+**Amphi** is the Nervous and Immune System residing inside the Linux Kernel. It sees every system call, every network packet, every processor instruction, and every memory state change.
+
+The **KORE Platform** is the functional layer that comes **EMBEDDED** inside Amphi. It consists of high-level modules that transform the raw power of the Kernel into ready-to-use business services.
+
+*(Refer to the Portuguese section for the full architecture diagram)*
+
+## The Self-Healing Loop (OODA)
+The system operates on a closed-loop cycle of **Observe, Orient, Decide, Act, and Notify**.
+
+| Stage | Component | Action |
+| :--- | :--- | :--- |
+| **1. Observe** | Amphi (Nerves/eBPF) & DriftGuard | Collects raw data from hardware, network, and system. |
+| **2. Orient** | Amphi (Brain/Mojo) & DriftGuard (ML) | Classifies the anomaly: attack, memory leak, traffic spike, or performance degradation. |
+| **3. Decide** | KORE (Decision Engine) | Consults the `rules.yaml` file and determines if the action is Automatic or Manual. |
+| **4. Act** | Amphi (Enforcer/Rust) & Lume (Go) | Executes the action: isolates the process (Cgroups), blocks the IP, restarts the service, or scales the pod. |
+| **5. Notify** | KORE (Telegram/Slack) | Sends a message with the severity level and what was done. |
+
+## The Decision Matrix (Auto vs. Manual)
+The heart of the "3 AM" promise is the `rules.yaml` file. It defines exactly when the system acts alone and when it calls you.
+
+| Level | What it means | System Action | Notification |
+| :--- | :--- | :--- | :--- |
+| **🟢 Low** | Quick CPU spike or momentary traffic. | **Ignore.** No action. | **(Silence)** |
+| **🟡 Medium** | Slow memory leak or performance degradation. | **Auto-Heal.** Restarts the Pod/Container or scales horizontally. | `🟡 AUTO-HEALED: Pod X restarted at 14:32. Stability restored.` |
+| **🔴 High** | Ransomware attack, data exfiltration, or confirmed security failure (Mojo with 95%+ confidence). | **Auto-Containment.** Isolates the process in Cgroups v2, blocks the IP in Lume, and generates a forensic snapshot. **Manual action required.** | `🔴 MANUAL REQUIRED: Attack contained. IP X.X.X.X blocked. Run 'amphi dump <id>' for forensics.` |
+
+### `rules.yaml` Example:
+```yaml
+rules:
+  # Auto-Heal (You won't even know it happened)
+  - name: "Memory Leak Auto-Heal"
+    source: "driftguard"
+    condition: "memory_usage > 85% AND duration > 5min"
+    action: "restart_pod"
+    notification: "auto"
+
+  # Auto-Containment (Alert, but contained)
+  - name: "Ransomware Zero-Day"
+    source: "amphi"
+    condition: "mojo_confidence > 90% AND iops_spike > 1000%"
+    action: "isolate_process_and_block_ip"
+    notification: "manual"
+
+  # Manual Only (You decide)
+  - name: "Suspicious API Call Pattern"
+    source: "lume-gateway"
+    condition: "rate_limit_exceeded AND geoip = 'unknown'"
+    action: "manual_review"
+    notification: "manual"
+```
+
+## Ecosystem Components
+| Component | Role | Technology |
+| :--- | :--- | :--- |
+| **Amphi (Kernel)** | Autonomous Immune System. Monitors syscalls, network, hardware, and isolates threats. | Rust, eBPF, C++, Mojo (AI) |
+| **KoreAI** | Artificial Intelligence with autonomous agents and RAG (semantic search). | Python, LangChain, Qdrant |
+| **Tenentis OS** | Multi-tenant SaaS with absolute data isolation via RLS on PostgreSQL. | Node.js, PostgreSQL, Redis |
+| **Lume-Gateway** | Traffic orchestrator with rate limiting, circuit breaker, and GeoIP. | Go |
+| **DriftGuard** | Cognitive observability, anomaly detection, FinOps, and GreenOps. | Python, ML, Prometheus |
+| **Decision Engine** | Rules engine that coordinates self-healing and notifications. | Python (Flask) + YAML |
+
+## How to Install
+Installing Amphi already includes the KORE Platform. Just one command:
+
+```bash
+# Download the Amphi binary
+curl -L https://amphi.io/install.sh | bash
+
+# Start the system (Kernel + KORE Platform)
+sudo amphi start
+
+# Check the status of services
+amphi status --services
+```
+
+### Spinning up the Full Ecosystem with Docker:
+```bash
+git clone https://github.com/kauand3v/kore-platform
+cd kore-platform
+docker-compose -f docker-compose.ecosystem.yml up -d
+```
+
+## The 3 AM Promise
+**Before:** Alarm goes off. You wake up in panic. Open your laptop. Check the logs. Realize it's a false alarm. Can't sleep anymore.
+
+**After (With Amphi/KORE):** The system detects the spike. The Brain (Mojo) analyzes and decides: "It's just a legitimate traffic spike." The system **ignores** it and **doesn't wake you up**. In the morning, you have your coffee, open the dashboard, and see: *"3 auto-resolved alerts during the night. No action needed."*
+
+**If it's serious:** The system contains the attack, blocks the intruder, and only wakes you up with the problem already contained. You solve it calmly, armed with a full forensic report.
+
+> **"You are no longer a firefighter. You are an architect."**
+
+---
+
+## 📫 Author / Autor
+**Kauan Oliveira** - Systems & Security Architect  
+[GitHub](https://github.com/kauand3v) | [LinkedIn](https://linkedin.com/in/kauand3v)
+
+## 📄 License / Licença
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+**Go ahead. Install Amphi. Sleep well.**  
+**Vá em frente. Instale o Amphi. Durma bem.**
+
+
