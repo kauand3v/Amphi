@@ -853,11 +853,6 @@ Essas capacidades foram projetadas para serem incrementalmente integradas à arq
 
 ---
 
-
-Aqui estão os dois diagramas principais do **Amphi**, prontos para copiar e colar no seu `README.md`. O GitHub renderiza Mermaid automaticamente.
-
----
-
 ## 🏛️ Diagrama de Arquitetura Completa
 
 ```mermaid
