@@ -921,4 +921,101 @@ graph TD
 
 ---
 
-Basta colar esses blocos no `README.md` do seu repositório. Se quiser ajustar cores, textos ou adicionar novos componentes, é só mexer no código Mermaid — totalmente versionável e sem precisar de imagens externas. 🚀
+Aqui estão as explicações detalhadas para cada diagrama, em **Português (BR)** e **Inglês (US)**, prontas para serem coladas logo abaixo dos respectivos blocos Mermaid no seu README.
+
+---
+
+## 📊 Explicação do Diagrama de Arquitetura
+
+### 🇧🇷 Português
+
+O diagrama de arquitetura do **Amphi** revela um organismo digital completo, dividido em três camadas fundamentais que cooperam para proteger infraestruturas críticas de forma autônoma.
+
+- **Interface de Usuário (topo):** O painel administrativo em React/Next.js oferece uma visão unificada de todo o ecossistema — da saúde do kernel às aplicações de negócio. É o centro de comando onde o arquiteto de segurança supervisiona, mas não precisa agir manualmente.
+
+- **KORE Platform (User-Space):** Esta é a camada funcional que transforma o poder bruto do kernel em serviços empresariais prontos:
+  - **KoreAI** fornece inteligência artificial com agentes autônomos e busca semântica (RAG).
+  - **Tenentis OS** gerencia múltiplos inquilinos com isolamento absoluto de dados.
+  - **Lume-Gateway** orquestra o tráfego com rate limiting, circuit breaker e GeoIP.
+  - **DriftGuard** entrega observabilidade cognitiva, FinOps e GreenOps, além de alimentar o núcleo de detecção com telemetria contínua.
+
+- **AMPHI CORE (Kernel-Space):** O verdadeiro sistema imunológico, operando em nível de kernel via eBPF. Seus sete "órgãos" trabalham em conjunto:
+  - **Nerves (eBPF/C)** é a percepção: monitora cada syscall, pacote de rede e operação de disco sem latência perceptível.
+  - **Filter (C++)** é o sistema límbico: processa milhões de eventos por segundo e descarta o ruído, enviando apenas anomalias ao cérebro.
+  - **Brain (Mojo/IRL)** é a cognição adaptativa: utiliza aprendizado por reforço inverso para prever intenções maliciosas e detectar ameaças zero‑day.
+  - **Enforcer (Rust)** é a resposta imunológica: isola ou estrangula processos maliciosos via Cgroups v2, com segurança de memória garantida.
+  - **Ghost (Go)** é a decepção estratégica: rotação dinâmica de portas e honeypots que prendem o atacante enquanto o serviço real migra.
+  - **Memory (TS/SQL)** é a caixa-preta forense: armazena snapshots de memória e contexto de rede para replay em gêmeo digital.
+
+- **Hardware Root of Trust (TPM 2.0 / HSM):** A âncora de segurança física. Se o agente Amphi for adulterado, o sistema aciona um travamento em nível de hardware (Fail-Closed), tornando o nó inacessível.
+
+---
+
+### 🇺🇸 English
+
+The Amphi architecture diagram reveals a complete digital organism, divided into three fundamental layers that cooperate to protect critical infrastructure autonomously.
+
+- **User Interface (top):** The React/Next.js admin dashboard provides a unified view of the entire ecosystem — from kernel health to business applications. It is the command center where the security architect supervises but does not need to act manually.
+
+- **KORE Platform (User-Space):** This is the functional layer that transforms raw kernel power into business‑ready services:
+  - **KoreAI** delivers artificial intelligence with autonomous agents and semantic search (RAG).
+  - **Tenentis OS** manages multiple tenants with absolute data isolation.
+  - **Lume-Gateway** orchestrates traffic with rate limiting, circuit breaker, and GeoIP.
+  - **DriftGuard** provides cognitive observability, FinOps, and GreenOps while continuously feeding telemetry into the detection core.
+
+- **AMPHI CORE (Kernel-Space):** The true immune system, operating at kernel level via eBPF. Its seven “organs” work together:
+  - **Nerves (eBPF/C)** is perception: monitors every syscall, network packet, and disk operation with near‑zero latency.
+  - **Filter (C++)** is the limbic system: processes millions of events per second, discarding noise and forwarding only anomalies to the brain.
+  - **Brain (Mojo/IRL)** is adaptive cognition: uses inverse reinforcement learning to predict malicious intent and detect zero‑day threats.
+  - **Enforcer (Rust)** is the immune response: isolates or throttles malicious processes via Cgroups v2 with guaranteed memory safety.
+  - **Ghost (Go)** is strategic deception: dynamic port rotation and honeypots trap the attacker while the real service migrates.
+  - **Memory (TS/SQL)** is the forensic black box: stores memory snapshots and network context for digital twin replay.
+
+- **Hardware Root of Trust (TPM 2.0 / HSM):** The physical security anchor. If the Amphi agent is tampered with, a hardware‑level lock triggers (Fail‑Closed), rendering the node inaccessible.
+
+---
+
+## 🔁 Explicação do Ciclo de Auto-Cura (Loop OODA)
+
+### 🇧🇷 Português
+
+O ciclo de auto-cura do Amphi é a realização prática da filosofia "nunca mais seja acordado às 3h". Ele implementa um loop contínuo de **OODA** (Observe, Orient, Decide, Act, Notify), eliminando a necessidade de intervenção humana para a maioria dos incidentes.
+
+1. **Observe (Observar):** Sensores no kernel (eBPF) e no user-space (DriftGuard) coletam dados brutos de hardware, rede e sistema — em tempo real e sem pontos cegos.
+
+2. **Orient (Orientar):** O Brain (Mojo) classifica a anomalia usando IA comportamental. Ele não busca assinaturas conhecidas; ele entende o contexto e a intenção: é um ataque, um vazamento de memória, um pico de vendas legítimo ou degradação de performance?
+
+3. **Decide (Decidir):** O Decision Engine consulta o arquivo `rules.yaml` — o coração da promessa das 3h. Ele define o que é **baixo** (ignorar), **médio** (auto-cura) ou **alto** (auto-contenção com notificação obrigatória).
+
+4. **Act (Agir):** A ação é instantânea:
+   - 🟢 **Baixo:** Nenhuma ação. O sistema nem notifica.
+   - 🟡 **Médio:** Auto-cura — reinicia o pod, escala recursos, resolve sozinho.
+   - 🔴 **Alto:** Auto-contenção — isola o processo no Cgroups v2, bloqueia o IP, gera um snapshot forense e **só então** notifica.
+
+5. **Notify (Notificar):** Você só é acionado se for realmente necessário. Para incidentes médios, recebe um resumo silencioso. Para incidentes graves, recebe um alerta com o problema **já contido** e um relatório forense completo — pronto para agir com calma, não em pânico.
+
+**A diferença fundamental:** você não é mais um bombeiro correndo atrás de alarmes. Você é o arquiteto de um organismo que se defende sozinho.
+
+---
+
+### 🇺🇸 English
+
+The Amphi self-healing cycle is the practical realization of the “never be woken up at 3 AM” philosophy. It implements a continuous **OODA** loop (Observe, Orient, Decide, Act, Notify), eliminating human intervention for most incidents.
+
+1. **Observe:** Kernel‑level sensors (eBPF) and user‑space telemetry (DriftGuard) collect raw data from hardware, network, and system — in real time, with no blind spots.
+
+2. **Orient:** The Brain (Mojo) classifies the anomaly using behavioral AI. It does not look for known signatures; it understands context and intent: is it an attack, a memory leak, a legitimate sales spike, or performance degradation?
+
+3. **Decide:** The Decision Engine consults the `rules.yaml` file — the heart of the 3 AM promise. It defines what is **low** (ignore), **medium** (self‑heal), or **high** (auto‑containment with mandatory notification).
+
+4. **Act:** The response is immediate:
+   - 🟢 **Low:** No action. The system does not even notify.
+   - 🟡 **Medium:** Self‑heal — restarts the pod, scales resources, resolves itself.
+   - 🔴 **High:** Auto‑containment — isolates the process in Cgroups v2, blocks the IP, captures a forensic snapshot, and **only then** notifies.
+
+5. **Notify:** You are only contacted if truly necessary. For medium incidents, you receive a silent summary. For critical incidents, you get an alert with the problem **already contained** and a full forensic report — ready to act calmly, not in panic.
+
+**The fundamental difference:** you are no longer a firefighter chasing alarms. You are the architect of an organism that defends itself.
+
+---
+
