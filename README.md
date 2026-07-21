@@ -724,4 +724,133 @@ Distributed under the MIT License. See `LICENSE` for more information.
 **Go ahead. Install Amphi. Sleep well.**  
 **Vá em frente. Instale o Amphi. Durma bem.**
 
+---
+
+
+# Amphi: Future Features & Roadmap Expansion  
+## Novas Funcionalidades e Expansão do Roadmap  
+
+*A próxima geração do sistema imunológico autônomo – mais inteligente, portátil e conectado.*  
+*The next generation of the autonomous immune system – smarter, portable, and connected.*
+
+---
+
+## 🧠 AI & Cognition | IA e Cognição
+
+### Explainable AI (XAI) integrado ao Brain  
+[EN] The Brain will generate human-readable justifications for its decisions (e.g., “Process attempted to read /etc/shadow after receiving data from an anomalous socket”), reinforcing the Glass Box philosophy and enabling faster manual validation.  
+[PT-BR] O Cérebro gerará justificativas legíveis por humanos para suas decisões (ex.: “O processo tentou ler /etc/shadow após receber dados de um socket anômalo”), reforçando a filosofia Glass Box e acelerando a validação manual.
+
+### Processamento de Linguagem Natural (NLP) para Inteligência de Ameaças  
+[EN] A new module will continuously scan CVEs, security blogs, APT reports, and automatically extract IOCs and behavioral patterns to generate new `rules.yaml` entries – turning unstructured threat intel into proactive defenses.  
+[PT-BR] Um novo módulo examinará continuamente CVEs, blogs de segurança e relatórios de APT para extrair automaticamente IOCs e padrões comportamentais, gerando novas entradas no `rules.yaml` – transformando inteligência de ameaças não estruturada em defesas proativas.
+
+### Aprendizado por Reforço Contínuo (Online RL)  
+[EN] The Brain will adjust its policies in real-time based on the success or failure of the Enforcer's actions, enabling continuous improvement without waiting for offline model updates.  
+[PT-BR] O Cérebro ajustará suas políticas em tempo real com base no sucesso ou falha das ações do Enforcer, permitindo melhoria contínua sem esperar por atualizações offline do modelo.
+
+---
+
+## 🌐 Platform & Coverage | Plataforma e Cobertura
+
+### Amphi para Windows (via eBPF on Windows)  
+[EN] Porting the Nerves module to Windows using the emerging eBPF for Windows runtime, allowing deep syscall monitoring on NT-based systems and unified hybrid-cloud protection.  
+[PT-BR] Portabilidade do módulo Nerves para Windows utilizando o emergente runtime eBPF for Windows, permitindo monitoramento profundo de syscalls em sistemas baseados em NT e proteção unificada em ambientes híbridos.
+
+### Suporte Nativo a Kubernetes (Amphi Operator)  
+[EN] An Amphi Operator will automatically inject eBPF hooks into every cluster node and manage security policies via Custom Resource Definitions (CRDs), including invisible pod-level sidecar protection.  
+[PT-BR] Um Operador Amphi injetará automaticamente hooks eBPF em cada nó do cluster e gerenciará políticas de segurança via Custom Resource Definitions (CRDs), incluindo proteção invisível em nível de pod (sidecar).
+
+### Edge / IoT / ARM  
+[EN] Lightweight Amphi agent optimized for ARM architectures, bringing kernel-level immunity to IoT gateways, 5G edge, and autonomous vehicles.  
+[PT-BR] Agente Amphi leve e otimizado para arquiteturas ARM, levando imunidade em nível de kernel para gateways IoT, borda 5G e veículos autônomos.
+
+---
+
+## 🛡️ Advanced Defenses & Response | Defesas Avançadas e Respostas
+
+### Roteamento Dinâmico de Cargas (Workload Shielding)  
+[EN] Under attack, the Ghost module will live-migrate legitimate applications to a safe node while the attacker remains trapped in the original host, which instantly turns into a real-time honeypot.  
+[PT-BR] Sob ataque, o módulo Ghost migrará ao vivo as aplicações legítimas para um nó seguro enquanto o atacante permanece preso no host original, que se transforma instantaneamente em um honeypot em tempo real.
+
+### Decepção como Serviço (Honey-Infrastructure)  
+[EN] Beyond fake ports, Amphi will spawn synthetic databases, REST endpoints, and entire containers filled with AI-generated data to maximize adversary engagement and delay.  
+[PT-BR] Além de portas falsas, o Amphi criará bancos de dados, endpoints REST e contêineres inteiros sintéticos preenchidos com dados gerados por IA para maximizar o engajamento e o atraso do adversário.
+
+### Hack‑back Controlado (Contra‑ataque Autorizado)  
+[EN] Under strict governance, Ghost will trace attack origins and launch passive, non-destructive probes to map adversarial infrastructure, aiding legal task forces.  
+[PT-BR] Sob estrita governança, o Ghost rastreará a origem do ataque e lançará probes passivos não destrutivos para mapear a infraestrutura adversária, auxiliando forças-tarefa legais.
+
+### Firewall Comportamental de Saída  
+[EN] The Brain will classify outbound connections not only by exfiltration patterns but by identifying known C2 destinations, DGA-generated domains, and covert channels.  
+[PT-BR] O Cérebro classificará conexões de saída não apenas por padrões de exfiltração, mas identificando destinos C2 conhecidos, domínios gerados por DGA e canais encobertos.
+
+---
+
+## 📊 Operations, Compliance & Visualization | Operações, Compliance e Visualização
+
+### Dashboard Unificado (Amphi Control Center)  
+[EN] A React‑based 3D swarm visualization with real-time heat maps, immunological health scores, and in-browser digital twin replay of incidents.  
+[PT-BR] Dashboard baseado em React com visualização 3D do enxame, mapas de calor em tempo real, scores de saúde imunológica e replay de incidentes em gêmeo digital direto no navegador.
+
+### Relatórios Automáticos de Compliance  
+[EN] One-click generation of audit‑ready reports (GDPR Art. 33, NIS2, ISO 27001) with immutable forensic evidence anchored to a local blockchain ledger.  
+[PT-BR] Geração de relatórios prontos para auditoria (GDPR Art. 33, NIS2, ISO 27001) com evidências forenses imutáveis ancoradas em um ledger blockchain local.
+
+### Integração Total com SOAR  
+[EN] Bidirectional playbooks with Splunk SOAR, Cortex XSOAR, and others – Amphi becomes both a producer and consumer of orchestrated security actions.  
+[PT-BR] Playbooks bidirecionais com Splunk SOAR, Cortex XSOAR e outros – o Amphi se torna tanto produtor quanto consumidor de ações orquestradas de segurança.
+
+---
+
+## 🔗 Ecosystem & Extensibility | Ecossistema e Extensibilidade
+
+### Amphi Marketplace / App Store  
+[EN] A community hub to publish detection modules written in AmphiLang, custom `rules.yaml` policies, and ready-to-use integrations – “custom vaccines” for everyone.  
+[PT-BR] Um hub comunitário para publicar módulos de detecção escritos em AmphiLang, políticas `rules.yaml` personalizadas e integrações prontas – “vacinas customizadas” para todos.
+
+### Modo Sandbox para Desenvolvedores  
+[EN] An isolated simulation environment where security teams can test new attacks and rules using the Cerberus-Core in simulated mode with containers – zero risk.  
+[PT-BR] Ambiente de simulação isolado onde times de segurança podem testar novos ataques e regras usando o Cerberus-Core em modo simulado com contêineres – risco zero.
+
+### AmphiLens – Extensão para IDEs  
+[EN] Real-time verification while writing AmphiLang code: instant feedback on BPF Verifier compliance and optimization hints, right inside VS Code or JetBrains.  
+[PT-BR] Verificação em tempo real durante a escrita de código AmphiLang: feedback instantâneo sobre conformidade com o BPF Verifier e dicas de otimização, diretamente no VS Code ou JetBrains.
+
+---
+
+## ⚙️ Performance & Hardware | Performance e Hardware
+
+### Aceleração por Hardware (SmartNIC / DPU)  
+[EN] Offload eBPF processing (XDP/TC) to smart NICs (Mellanox, Netronome) or DPUs (NVIDIA BlueField), freeing host CPU and enabling line-rate protection at 100 Gbps.  
+[PT-BR] Descarregar o processamento eBPF (XDP/TC) para SmartNICs (Mellanox, Netronome) ou DPUs (NVIDIA BlueField), liberando a CPU do host e permitindo proteção em velocidade de linha a 100 Gbps.
+
+### Compilação Ahead-of-Time para eBPF (CO-RE Universal)  
+[EN] Leverage BPF Type Format (BTF) to produce portable eBPF binaries that run across different Linux kernels without recompilation – drastically simplifying distribution.  
+[PT-BR] Utilizar BPF Type Format (BTF) para gerar binários eBPF portáveis que executam em diferentes kernels Linux sem recompilação – simplificando drasticamente a distribuição.
+
+---
+
+## 🌍 Swarm Intelligence Avançada | Inteligência de Enxame Avançada
+
+### Enxame Multi‑tenant e Multi‑cloud  
+[EN] Federate swarms across partner organizations with differential privacy and zero-trust, creating a global “herd immunity” against zero-day threats – without exposing internal data.  
+[PT-BR] Federar enxames entre organizações parceiras com privacidade diferencial e zero-trust, criando uma “imunidade de rebanho” global contra ameaças zero‑day – sem expor dados internos.
+
+### Jogos Evolutivos para Defesa Coletiva  
+[EN] The Brain models the attacker as an adversarial agent in an evolutionary game; the swarm continuously learns optimal mitigation strategies through game theory.  
+[PT-BR] O Cérebro modela o atacante como um agente adversário em um jogo evolutivo; o enxame aprende continuamente estratégias ótimas de mitigação usando teoria dos jogos.
+
+### Provas de Conhecimento Zero (ZKP) na Troca de Vacinas  
+[EN] Nodes can prove they detected a real threat without revealing any incident details, using zero-knowledge proofs – critical for banks, hospitals, and high-compliance sectors.  
+[PT-BR] Nós podem provar que detectaram uma ameaça real sem revelar nenhum detalhe do incidente, usando provas de conhecimento zero – essencial para bancos, hospitais e setores de alta compliance.
+
+---
+
+## 📍 Roadmap Integration  
+These capabilities are designed to be incrementally integrated into the existing Amphi architecture, extending each organ with new submodules. The vision remains: *never be woken up at 3 AM by a false alarm again.*  
+Essas capacidades foram projetadas para serem incrementalmente integradas à arquitetura existente do Amphi, estendendo cada órgão com novos submódulos. A visão permanece: *nunca mais ser acordado às 3h por um falso alarme.*
+
+---
+
 
