@@ -854,3 +854,71 @@ Essas capacidades foram projetadas para serem incrementalmente integradas à arq
 ---
 
 
+Aqui estão os dois diagramas principais do **Amphi**, prontos para copiar e colar no seu `README.md`. O GitHub renderiza Mermaid automaticamente.
+
+---
+
+## 🏛️ Diagrama de Arquitetura Completa
+
+```mermaid
+graph TB
+    subgraph UI["🖥️ User Interface"]
+        Dashboard["Admin Portal / Dashboard<br/>(React / Next.js)"]
+    end
+
+    subgraph KORE["☁️ KORE PLATFORM (User-Space)"]
+        KoreAI["🧠 KoreAI<br/>LLM Agents / RAG"]
+        Tenentis["🏢 Tenentis OS<br/>Multi-Tenant RLS/JSONB"]
+        Lume["🚦 Lume-Gateway<br/>Rate Limit, Circuit Br., GeoIP"]
+        DriftGuard["📊 DriftGuard<br/>Observabilidade / FinOps / GreenOps"]
+    end
+
+    subgraph Amphi["⚙️ AMPHI CORE (Kernel-Space)"]
+        direction TB
+        Nerves["🔍 NERVES (eBPF/C)<br/>Syscall/Network/Disk Monitoring"]
+        Filter["🧹 FILTER (C++)<br/>Line-Rate Noise Reduction"]
+        Brain["🧠 BRAIN (Mojo/IRL)<br/>Behavioral Predictions<br/>Zero-Day Detection"]
+        Enforcer["🛡️ ENFORCER (Rust)<br/>Cgroups v2 Throttling/Kill"]
+        Ghost["👻 GHOST (Go)<br/>MTD/Honeypots<br/>Deception Ops"]
+        Memory["💾 MEMORY (TS/SQL)<br/>Forensics 'Black Box'<br/>Digital Twin Replay"]
+    end
+
+    subgraph Hardware["🔒 HARDWARE ROOT OF TRUST"]
+        TPM["TPM 2.0 / HSM<br/>Fail-Closed Security"]
+    end
+
+    Dashboard --> KoreAI & Tenentis & Lume & DriftGuard
+    DriftGuard <--> Amphi
+    KoreAI -.-> Brain
+    Lume -.-> Ghost
+    Amphi --> Hardware
+    Enforcer -.-> TPM
+```
+
+---
+
+## 🔁 Diagrama do Ciclo de Auto-Cura (Loop OODA)
+
+```mermaid
+graph TD
+    A["🔍 1. OBSERVE<br/>Amphi Nerves/eBPF + DriftGuard<br/>Coleta dados brutos"] --> B["🧭 2. ORIENT<br/>Brain/Mojo classifica anomalia<br/>(ataque, vazamento, pico, degradação)"]
+    B --> C{"⚖️ 3. DECIDE<br/>Decision Engine consulta rules.yaml"}
+    C -->|🟢 Baixo| D["Ignorar<br/>(Silêncio)"]
+    C -->|🟡 Médio| E["⚡ 4. ACT (Auto-Cura)<br/>Reiniciar Pod/Container<br/>Escalar horizontalmente"]
+    C -->|🔴 Alto| F["🛡️ 4. ACT (Auto-Contenção)<br/>Isolar processo (Cgroups v2)<br/>Bloquear IP (Lume)<br/>Gerar snapshot forense"]
+    E --> G["📬 5. NOTIFY<br/>🟡 AUTO-CURADO: Pod X reiniciado"]
+    F --> H["📬 5. NOTIFY<br/>🔴 AÇÃO MANUAL REQUERIDA<br/>Ataque contido. Execute 'amphi dump'"]
+
+    style A fill:#1f2937,stroke:#3b82f6,color:#fff
+    style B fill:#1f2937,stroke:#8b5cf6,color:#fff
+    style C fill:#1f2937,stroke:#f59e0b,color:#fff
+    style D fill:#065f46,stroke:#10b981,color:#fff
+    style E fill:#065f46,stroke:#10b981,color:#fff
+    style F fill:#7f1d1d,stroke:#ef4444,color:#fff
+    style G fill:#1e3a5f,stroke:#3b82f6,color:#fff
+    style H fill:#7f1d1d,stroke:#ef4444,color:#fff
+```
+
+---
+
+Basta colar esses blocos no `README.md` do seu repositório. Se quiser ajustar cores, textos ou adicionar novos componentes, é só mexer no código Mermaid — totalmente versionável e sem precisar de imagens externas. 🚀
