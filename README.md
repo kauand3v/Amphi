@@ -1,1016 +1,601 @@
-# 🛡️ Amphi: The Black Box
-
-> **The Autonomous Immune System for Critical Infrastructures | O Sistema Imunológico Autônomo para Infraestruturas Críticas**
-
 <p align="center">
-  <img src="assets/logo.png" alt="Amphi Logo" width="600">
+  <img src="assets/logo.png" alt="Amphi logo" width="520">
 </p>
 
+<h1 align="center">Amphi</h1>
+
+<p align="center"><strong>The Autonomous Immune System for Critical Infrastructure</strong></p>
+
+<p align="center"><em>"Stop configuring alerts. Start building systems that understand and defend themselves."</em></p>
 
 ---
 
-## 📑 Índice (Table of Contents)
-1. [📖 A Visão (The Vision)](#-a-visão-the-vision)
-2. [⚙️ Pré-requisitos (Prerequisites)](#️-pré-requisitos)
-3. [🗺️ Startup Roadmap / Roadmap de Desenvolvimento](#️-startup-roadmap--roadmap-de-desenvolvimento)
-4. [🏛️ Detalhamento da Arquitetura (Deep Dive - Os 7 Órgãos)](#️-detalhamento-da-arquitetura-deep-dive)
-5. [🔬 Tecnologias Avançadas & Submódulos](#-tecnologias-avançadas)
-6. [🛡️ Integração: Amphi + MorphBPF (Hardware-Agnostic Defense)](#️-integração-amphi--morphbpf-hardware-agnostic-defense)
-7. [🐕 Cerberus-Core — Amphi Ecosystem](#-cerberus-core--amphi-ecosystem)
-8. [💎 AmphiLang: The Vertical Engine](#-amphilang-the-vertical-engine--o-motor-vertical)
-9. [🧠 Human-in-the-Loop: The Glass Box Philosophy](#-human-in-the-loop-the-glass-box-philosophy)
-10. [💻 Ecossistema de CLI & Ciclo de Vida Operacional](#-amphi-cli-ecosystem--ecossistema-de-cli-amphi)
-11. [🧬 Inteligência em Enxame & Casos de Uso](#-inteligência-em-enxame-swarm-intelligence)
-12. [⚖️ Architectural Risks & Mitigations / Riscos e Mitigações](#️-architectural-risks--mitigations--riscos-arquiteturais-e-mitigações)
----
+> **Project status: pre-alpha, architecture and repository scaffolding only.**
+> This repository currently contains the design of Amphi and a skeleton of its intended layout. **No runtime component is implemented yet**: there is no eBPF, C++, Rust, Mojo, Go, or TypeScript source, no build system, no tests, and no benchmarks. Every capability described below is a design goal unless it is explicitly marked otherwise. See [Project Status](#project-status) for the evidence.
 
-## 📖 A Origem e a Visão (The Vision)
+## Table of Contents
 
-### 💡 The Origin & Vision | A Origem e a Visão
-
-* **[EN] The Origin Story:** The idea for Amphi was born from the observation of a paradox: our digital systems are the backbone of modern civilization, yet they remain incredibly fragile. Traditional security is static, relying on walls that are perpetually bypassed by AI-driven threats. I realized that if we want to secure the future, we must stop building "walls" and start growing "organisms."
-* **[PT-BR] A Origem da Ideia:** A ideia do Amphi nasceu da observação de um paradoxo: nossos sistemas digitais são a espinha dorsal da civilização moderna, mas permanecem incrivelmente frágeis. A segurança tradicional é estática, baseada em muros que são perpetuamente contornados por ameaças movidas por IA. Percebi que, se queremos proteger o futuro, precisamos parar de construir "muros" e começar a cultivar "organismos".
-
-### 🧬 Why the Name "Amphi"? | Por que o nome "Amphi"?
-
-* **[EN] The Meaning:** The name is derived from the prefix "Amphi-" (from Ancient Greek *amphi*), meaning "both," "on both sides," or "surrounding."
-* **Bio-mimicry:** It represents an Amphibian nature—the ability to adapt and survive in two different environments: the User-Space (where applications run) and the Kernel-Space (where the system breathes).
-* **Security:** Like an amphibian that thrives in water and on land, Amphi thrives within the deep kernel and the high-level network topology, providing "surrounding" protection that is both internal and external.
-
-
-* **[PT-BR] O Significado:** O nome deriva do prefixo "Amphi-" (do grego antigo *amphi*), que significa "ambos", "de ambos os lados" ou "ao redor".
-* **Bio-mimetismo:** Representa uma natureza Anfíbia — a capacidade de se adaptar e sobreviver em dois ambientes distintos: o User-Space (onde as aplicações rodam) e o Kernel-Space (onde o sistema respira).
-* **Segurança:** Assim como um anfíbio que prospera na água e na terra, o Amphi prospera nas profundezas do kernel e na topologia de rede de alto nível, fornecendo uma proteção "ao redor" que é, simultaneamente, interna e externa.
-
-
-
-### 🧠 Why This Architecture? | Por que esta arquitetura?
-
-* **[EN] The Concept:** Most security solutions are reactive (they wait for an attack signature). Amphi is proactive and cognitive. By using **eBPF**, we gain an "omnipresent view" of the system without performance loss. By using **Mojo**, we achieve the speed of C with the intelligence of modern AI, allowing the system to learn the difference between a "normal user" and a "malicious threat" in real-time.
-* **[PT-BR] O Conceito:** A maioria das soluções de segurança é reativa (esperam por uma assinatura de ataque). O Amphi é proativo e cognitivo. Ao usar **eBPF**, ganhamos uma "visão onipresente" do sistema sem perda de performance. Ao usar **Mojo**, alcançamos a velocidade de C com a inteligência da IA moderna, permitindo que o sistema aprenda a diferença entre um "usuário normal" e uma "ameaça maliciosa" em tempo real.
-
-### 💼 Market Value | Valor de Mercado
-
-* **[EN]** This roadmap transforms Amphi from a simple "Antivirus" into an Autonomous Security Analyst, drastically reducing operational costs (OpEx) for SOC teams and meeting the highest global regulatory standards (NIS2, GDPR, SOX).
-* **[PT-BR]** Este roadmap transforma o Amphi de um simples "Antivírus" em um Analista de Segurança Autônomo, reduzindo drasticamente os custos operacionais (OpEx) de equipes de SOC e atendendo aos mais altos padrões regulatórios globais (NIS2, GDPR, SOX).
-
-### 🚀 Competitive Positioning | Posicionamento Competitivo
-
-Amphi transcends traditional security by shifting from reactive detection to **Cognitive Intent Analysis** and **Hardened Autonomy**. O Amphi transcende a segurança tradicional, migrando da detecção reativa para a Análise Cognitiva de Intenção e Autonomia Blindada.
-
-* **Brain (Mojo) - From Detection to Intent / Da Detecção à Intenção:**
-* **[EN]** By utilizing Inverse Reinforcement Learning (IRL), the Brain doesn't just identify "what" a process is doing; it predicts "why" it is doing it. By forecasting an adversary’s next three moves, Amphi intercepts attacks before they fully manifest.
-* **[PT-BR]** Utilizando Aprendizado por Reforço Inverso (IRL), o Brain não apenas identifica "o que" um processo está fazendo; ele prevê o "porquê". Ao antecipar os próximos três passos de um adversário, o Amphi intercepta ataques antes que eles se concretizem.
-
-
-* **Fail-Closed - Mathematical Integrity / Integridade Matemática:**
-* **[EN]** We move beyond logic to physical security by anchoring our Fail-Closed mechanism to Hardware Root of Trust (TPM 2.0/HSM). If the Amphi agent is tampered with, the system triggers a hardware-level lock, rendering the node unreachable to unauthorized entities.
-* **[PT-BR]** Elevamos a segurança da lógica para o hardware, ancorando nosso mecanismo Fail-Closed em uma Raiz de Confiança por Hardware (TPM 2.0/HSM). Caso o agente Amphi seja adulterado, o sistema aciona um travamento em nível de hardware, tornando o nó inacessível para entidades não autorizadas.
-
-
+- [Project Overview](#project-overview)
+- [Project Status](#project-status)
+- [The Problem](#the-problem)
+- [The Vision](#the-vision)
+- [Design Principles](#design-principles)
+- [System Architecture](#system-architecture)
+- [The Seven Core Components](#the-seven-core-components)
+- [Advanced Research and Subsystems](#advanced-research-and-subsystems)
+  - [Encrypted Traffic Visibility](#encrypted-traffic-visibility)
+  - [Graduated Containment with Cgroups v2](#graduated-containment-with-cgroups-v2)
+  - [Hardware Telemetry](#hardware-telemetry)
+  - [Hardware Root of Trust](#hardware-root-of-trust)
+  - [Continuous Self-Audit](#continuous-self-audit)
+  - [Digital Twin Playback](#digital-twin-playback)
+- [Cerberus-Core](#cerberus-core)
+- [MorphBPF and Hardware Compatibility](#morphbpf-and-hardware-compatibility)
+- [AmphiLang](#amphilang)
+- [The Glass Box Philosophy](#the-glass-box-philosophy)
+- [Operational Lifecycle](#operational-lifecycle)
+- [CLI Design](#cli-design)
+- [Self-Healing and Decision Engine](#self-healing-and-decision-engine)
+- [Swarm Intelligence](#swarm-intelligence)
+- [Security Model and Architectural Risks](#security-model-and-architectural-risks)
+- [Development Roadmap](#development-roadmap)
+- [Related Ecosystem](#related-ecosystem)
+- [Technical Requirements](#technical-requirements)
+- [Building, Running, and Testing](#building-running-and-testing)
+- [Research and Future Directions](#research-and-future-directions)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
 ---
 
-## ⚙️ Pré-requisitos
+## Project Overview
 
-Como o Amphi opera no nível mais profundo do sistema operacional, o ambiente hospedeiro precisa atender a alguns requisitos mínimos:
+Amphi is a proposed low-level security and observability core for Linux. It explores the move from traditional observability, which collects data and raises alerts for humans, to an **autonomous, behavioral, explainable, and controlled** defense architecture: a system that observes at the kernel boundary, models what normal behavior looks like, reasons about deviations, and responds within limits that its operators define.
 
-* **OS:** Linux (Arch Linux, Ubuntu 22.04+, ou qualquer distribuição com suporte nativo a eBPF)
-* **Kernel:** Linux Kernel versão 5.8 ou superior (necessário para os hooks avançados do eBPF).
-* **Dependências de Build:**
-* Rust (`cargo` e `rustc` 1.70+)
-* Go (1.20+)
-* Clang/LLVM (para compilar os programas eBPF em C)
-* Node.js / TypeScript (para a engine do Memory/Forensics)
-* Python (3.10+)
+Amphi is not intended to be a conventional antivirus or a metrics dashboard. It is an attempt to combine four ideas that are usually built separately:
 
+1. Kernel-level telemetry through eBPF.
+2. Behavioral analysis instead of signature matching alone.
+3. Graduated, reversible response, with a human in control of high-impact actions.
+4. Forensic evidence that is captured as part of the defense, not reconstructed afterwards.
 
+**Why "Amphi"?** The prefix comes from the Ancient Greek *amphi*, meaning "on both sides" or "around". It refers to the system's two habitats, kernel space where the system acts and user space where applications run, and to protection that spans both.
 
----
+### Scope and relationship to KORE Platform
 
-## 🗺️ Startup Roadmap / Roadmap de Desenvolvimento
+Amphi is the **low-level Linux security and observability core**. The KORE Platform is a separate, higher-level ecosystem that may integrate Amphi alongside other projects. KoreAI, Tenentis OS, Lume-Gateway, DriftGuard, and the Decision Engine are **not** part of Amphi and are not implemented here. They are listed under [Related Ecosystem](#related-ecosystem) as related projects and planned integrations.
 
-| Stage | Focus | Objective |
+## Project Status
+
+Status labels used throughout this document:
+
+| Label | Meaning |
+| --- | --- |
+| **Implemented** | Working code exists in this repository and has been verified. |
+| **In Progress** | Work has started in the repository but is incomplete. |
+| **Planned** | The design is scoped and feasible with well-understood techniques. No code exists yet. |
+| **Research** | Feasibility, correctness, or value is an open question. No code exists yet. |
+
+The status below comes from inspecting the repository contents, not from earlier documentation.
+
+| Area | Intended technology | Status | Evidence |
+| --- | --- | --- | --- |
+| Repository scaffolding | Directory layout, placeholder files | **In Progress** | 22 placeholder files exist (1 byte each, a single newline); no content. |
+| Architecture documentation | Markdown | **In Progress** | This README. `docs/*.md` files are empty placeholders. |
+| Nerves | C / eBPF | **Planned** | No `.c` or BPF source in the repository. |
+| Filter | C++ | **Planned** | No C++ source. |
+| Orchestrator | Python | **Planned** | `cli/` and `daemon/watchdog/monitor.py` exist but are empty. |
+| CLI (`amphi`) | Python | **Planned** | `cli/main.py`, `cli/commands/start.py`, `cli/commands/isolate.py` are empty. |
+| Enforcer | Rust | **Planned** | No Rust source or `Cargo.toml`. |
+| Memory | TypeScript / SQL | **Planned** | No source; `deploy/docker/Dockerfile.memory` is empty. |
+| Policy profiles | YAML | **Planned** | `config/amphi.yaml` and `config/profiles/{paranoid,balanced,learning}.yaml` are empty. |
+| Deployment (Docker, Helm) | Docker, Helm | **Planned** | Dockerfiles, `Chart.yaml`, and `values.yaml` are empty. |
+| Brain | Mojo | **Research** | No source. Behavioral modeling and IRL are open research questions. |
+| Ghost | Go / Envoy | **Research** | No source. Moving Target Defense and deception are unproven here. |
+| Cerberus-Core | Not finalized | **Research** | Design notes only. |
+| MorphBPF | Not finalized | **Research** | Design notes only. |
+| AmphiLang (MLIR-based) | Not finalized | **Research** | Design notes only. |
+| Swarm Intelligence | Not finalized | **Research** | Design notes only. |
+| Tests, benchmarks, CI | n/a | **Planned** | None exist. |
+
+At present nothing is **Implemented**.
+
+## The Problem
+
+Modern infrastructure is defended mostly by static controls: signature databases, threshold alerts, and perimeter rules. They share structural weaknesses.
+
+- **Signatures lag behind attackers.** Previously unseen techniques are, by definition, absent from signature sets.
+- **Alert-centric monitoring shifts work to humans.** Threshold alerts produce noise, and operators learn to distrust them, which is itself a security risk.
+- **User-space visibility can be bypassed.** Monitoring that depends on agents or libraries in the same trust domain as the workload is easier for an attacker to evade or disable.
+- **Detection and forensics are disconnected.** By the time an incident is investigated, volatile evidence is often gone.
+- **Automated response is risky.** Aggressive automation can cause outages, so many teams avoid enabling it at all.
+
+## The Vision
+
+Amphi aims at a system that can:
+
+- observe system behavior from the kernel boundary with bounded, measured overhead;
+- learn per-workload behavioral baselines and flag deviations with an explanation;
+- respond proportionally, from alert to throttling to isolation, with reversibility and human approval for high-impact actions;
+- preserve evidence at the moment of an incident for later analysis and replay;
+- optionally share validated threat indicators with other nodes without exposing sensitive local data.
+
+The operating model is a closed **OODA loop** (Observe, Orient, Decide, Act) with a notification and review stage, described in [Self-Healing and Decision Engine](#self-healing-and-decision-engine).
+
+## Design Principles
+
+| Principle | What it means in Amphi |
+| --- | --- |
+| **Evidence over assertion** | Performance, detection quality, and overhead claims require reproducible benchmarks. None are made today. |
+| **Glass box, not black box** | Every automated decision must be explainable: inputs, rule or model, confidence, and action taken. See [The Glass Box Philosophy](#the-glass-box-philosophy). |
+| **Human-in-the-Loop** | High-impact or low-confidence decisions go to an operator. Autonomy is earned per action class through observation modes. |
+| **Fail-safe enforcement** | When the analysis layer is uncertain, the default is to alert and preserve evidence, not to terminate workloads. |
+| **Fail-closed integrity** | When Amphi detects tampering with itself, it should withhold trust (for example credentials and attestation) from the affected node. This trades availability for integrity and must be configurable per environment. |
+| **Defense in depth** | No single mechanism (eBPF, cgroups, TPM, a model) is treated as sufficient. |
+| **Least privilege and minimal kernel footprint** | Kernel-side programs stay small, auditable, and unloadable at any time. |
+| **Reversibility** | Containment actions should be undoable, rate-limited, and bounded in blast radius. |
+
+## System Architecture
+
+Amphi is organized as seven cooperating components, informally called organs. Telemetry flows from kernel-space probes through noise reduction into analysis, and a separate coordination layer decides whether and how to act.
+
+```mermaid
+flowchart TB
+    subgraph KS["Kernel space"]
+        N["Nerves<br/>C / eBPF probes"]
+        RB[("eBPF maps and<br/>ring buffers")]
+    end
+
+    subgraph US["User space"]
+        F["Filter<br/>C++ event processing"]
+        B["Brain<br/>Mojo behavioral analysis"]
+        O["Orchestrator<br/>Python coordination"]
+        E["Enforcer<br/>Rust containment"]
+        G["Ghost<br/>Go / Envoy deception"]
+        M[("Memory<br/>TypeScript / SQL forensics")]
+    end
+
+    H(["Human operator"])
+    T["TPM 2.0 / HSM<br/>hardware root of trust"]
+
+    N --> RB
+    RB --> F
+    F --> B
+    F --> M
+    B --> O
+    O --> E
+    O --> G
+    O --> M
+    O <--> H
+    E -. "cgroup v2 and policy controls" .-> KS
+    T -. "attestation and key sealing" .-> O
+```
+
+*All components in this diagram are in the Planned or Research state.* The data path (Nerves to Filter to Brain) is intended to stay independent of the control path (Orchestrator to Enforcer and Ghost), so that heavy analysis cannot stall enforcement and enforcement cannot be triggered without passing a policy decision.
+
+## The Seven Core Components
+
+| Component | Language | Role | Status |
+| --- | --- | --- | --- |
+| **Nerves** | C / eBPF | Kernel observability: syscalls, network, and disk operations, using tracepoints, kprobes, uprobes, and XDP/TC where appropriate. | Planned |
+| **Filter** | C++ | Event normalization, enrichment, aggregation, and noise reduction between the kernel and the analysis layer. | Planned |
+| **Brain** | Mojo | Behavioral baselining, anomaly detection, and research into Inverse Reinforcement Learning (IRL). | Research |
+| **Enforcer** | Rust | Controlled containment, isolation, and mitigation, with recovery paths. | Planned |
+| **Memory** | TypeScript / SQL | Forensic storage, event history, and investigation interface. | Planned |
+| **Ghost** | Go / Envoy | Moving Target Defense and deception infrastructure. | Research |
+| **Orchestrator** | Python | Coordination, policy distribution, automation, and external integrations. | Planned |
+
+### Nerves
+
+Nerves is the sensory layer. eBPF programs attach to kernel hooks and write compact events to shared **eBPF maps** and **ring buffers**. eBPF gives low-overhead, in-kernel visibility that is harder to evade than user-space instrumentation. It is not free: probe cost scales with event rate, and overhead must be measured per hook and workload. Privileged attackers can also detach or tamper with BPF programs, which is why self-integrity checks are part of the design.
+
+### Filter
+
+Filter sits between raw events and analysis. A busy host can generate far more events than a model should ingest, so Filter performs normalization, deduplication, rate-aware sampling, and enrichment (process lineage, container and cgroup identity). Filtering is a trade-off: discarding events reduces forensic completeness. The design therefore keeps a bounded raw-event buffer in Memory, so reduction affects what the Brain sees, not what investigators can later retrieve.
+
+### Brain
+
+Brain consumes filtered events and produces behavioral assessments. The core ideas are per-workload baselines (for example, which files a process normally reads, which peers it contacts), anomaly scoring, and an explanation attached to each score. Inverse Reinforcement Learning, which infers a reward function that would explain observed behavior, is an **active research direction**, not a planned deliverable. IRL outputs are probabilistic hypotheses about intent; they do not allow a system to know an attacker's next steps. Mojo is the intended implementation language for performance-sensitive model code.
+
+### Enforcer
+
+Enforcer executes containment decisions handed down by policy: throttle, freeze, isolate, block, or terminate. Rust provides memory-safety guarantees for safe code, which is valuable for a privileged component. It does not remove logic bugs, deadlocks, panics, misconfiguration, or incorrect decisions, so Enforcer needs bounded actions, an audit trail, dry-run support, and tested rollback.
+
+### Memory
+
+Memory is the forensic record, the "black box" of the system. It stores events, decisions with their explanations, and selected context captured around incidents, and exposes them for investigation. What to capture (for example process memory snapshots) and how to store it safely is a significant design question: captured memory can contain secrets and personal data, so retention, encryption, and access control are requirements, not options.
+
+### Ghost
+
+Ghost explores Moving Target Defense and deception: decoy services, rotating exposure, and traffic steering that waste attacker time and generate high-signal detections. Deception is effective mainly for catching reconnaissance and lateral movement, and it adds operational complexity. This is why Ghost is classified as Research.
+
+### Orchestrator
+
+Orchestrator is the control plane. It distributes policy, correlates signals, applies the decision logic that gates the Enforcer, handles operator approval, and integrates with external systems such as SIEMs and cloud APIs. It deliberately stays off the high-rate data path.
+
+## Advanced Research and Subsystems
+
+The items below are design directions. None is implemented.
+
+### Encrypted Traffic Visibility
+
+Kernel-level network hooks (XDP/TC) cannot read TLS payloads. The design considers **uprobes and uretprobes** on user-space crypto libraries, for example `SSL_write` and `SSL_read` in OpenSSL, to observe data at the library boundary before encryption or after decryption, without a decryption proxy.
+
+This gives useful but **partial** visibility, not complete visibility:
+
+- It only covers processes that dynamically link a supported library with resolvable symbols. Statically linked, stripped, or custom crypto is not covered.
+- Runtimes with their own TLS stacks (such as Go's `crypto/tls`, Java, or rustls) need separate probes.
+- QUIC is commonly implemented in user space by libraries that need their own instrumentation, and TLS offloaded to the kernel (kTLS) bypasses these hooks.
+- A privileged attacker can evade or tamper with user-space instrumentation.
+- Capturing plaintext has privacy and legal implications that need explicit policy.
+
+Status: Research.
+
+### Graduated Containment with Cgroups v2
+
+Instead of immediately terminating a suspicious process, the Enforcer could first **constrain** it using Linux cgroups v2 controllers (for example `cpu.max`, `io.max`, `memory.max`, `pids.max`, and `cgroup.freeze`). This can slow the process, limit its damage rate, and preserve its state for investigation.
+
+Important caveats:
+
+- **Cgroups v2 is a resource-control mechanism, not a security sandbox.** A throttled process still runs with its original privileges. Real isolation requires combining cgroups with namespaces, seccomp, LSM policy, and network controls.
+- Throttling reduces the rate of harm; it does not stop it. A slowed process can still exfiltrate small amounts of data or persist.
+- A sophisticated adversary may detect the slowdown, so "silent" containment should not be assumed.
+- Concrete CPU quotas and I/O limits are policy parameters to be validated experimentally, not guarantees.
+
+Status: Planned (Enforcer design), with effectiveness claims being Research.
+
+### Hardware Telemetry
+
+The design includes sampling CPU Performance Monitoring Counters (PMCs) through Linux `perf_events`, for example cache misses, branch mispredictions, and instructions per cycle, to look for behavior that syscall and network telemetry cannot show, such as some cryptominers and side-channel activity. Limitations: PMC signals are noisy and workload-dependent, many virtualized and cloud environments restrict or virtualize PMC access, and counter anomalies are weak evidence unless corroborated by other signals. Status: Research.
+
+### Hardware Root of Trust
+
+A TPM 2.0 or HSM can provide measured boot, remote attestation, and keys sealed to a platform state. Amphi intends to use this so that, if the agent or host is tampered with, credentials needed to participate in the trusted environment (for example mTLS keys) become unavailable and peers can refuse the node.
+
+A TPM does not block network traffic or kill processes on its own. Any "lock-down" behavior must be implemented by software and policy, such as firewall rules applied by a privileged watchdog, or key sealing that makes credentials unusable. An attacker with sufficient privilege can also stop a local watchdog, so tamper-evidence and remote attestation matter as much as local reaction. Status: Planned for the watchdog (`daemon/watchdog/` placeholders exist); Research for end-to-end fail-closed behavior.
+
+### Continuous Self-Audit
+
+Inspired by Chaos Engineering, a self-audit module would periodically execute **non-destructive synthetic behaviors** (for example reading a protected file or opening a decoy port) in controlled windows to verify that probes, detections, and Ghost decoys are alive, and report an "immunological health" indicator. The operational risk of injecting synthetic activity into production must be bounded by explicit scheduling and opt-in. Status: Planned.
+
+### Digital Twin Playback
+
+Digital Twin Playback is the idea of replaying recorded incident data in an isolated environment to study attacker behavior. Fidelity depends on what Memory captured; replay of a real exploit in a sandbox must itself be safely isolated. Status: Research.
+
+## Cerberus-Core
+
+Cerberus-Core is a research subsystem for correlating three analytical dimensions, named for the three-headed guardian of Greek myth.
+
+| Head | Dimension | Intended mechanism | Notes |
+| --- | --- | --- | --- |
+| `flow_state` | Network and logic | Persistent per-connection state in shared eBPF maps, enabling detection of fragmented or low-and-slow behavior that stateless packet inspection misses. | State tables need bounded memory and eviction to avoid becoming a denial-of-service target. |
+| `hardware_pmu` | CPU and hardware | PMC sampling via `perf_events` to detect microarchitectural anomalies. | Heuristic and noisy; limited in virtualized environments. Not a guarantee of detecting an attack before execution. |
+| `self_guard` | Self-integrity | Integrity checks over Amphi's own tables and pointers, for example HMAC validation of critical state. | Aims at tamper detection. It cannot make a compromised privileged environment safe by itself. |
+
+A correlation step would raise confidence when independent dimensions agree, for example anomalous flows together with anomalous CPU behavior. Correlating independent signals reduces false positives, but a correlated alert is still evidence, not proof.
+
+The proposed `cb` command interface for Cerberus-Core (`run`, `status`, `watch`, `freeze <PID>`) is described under [CLI Design](#cli-design). The relationship between Cerberus-Core and the seven components, and the implementation languages for each head, are not yet finalized and remain an open design question.
+
+Status: Research.
+
+## MorphBPF and Hardware Compatibility
+
+MorphBPF is the proposed compatibility layer for hardware and driver differences. Network cards and drivers differ in XDP support, packet header offsets, offload capabilities, and metadata. Without an abstraction, every rule must be written and tested per environment. MorphBPF is intended to normalize these differences so that upstream analysis, such as `flow_state`, sees a consistent view of packets regardless of the NIC vendor.
+
+The technical approach (for example, how it relates to BPF CO-RE, BTF, and per-driver capability detection) has not been specified. Status: Research.
+
+## AmphiLang
+
+AmphiLang is a proposed specialized language for security policy and detection logic. The intent is to let defenders express stateful behavioral rules declaratively and compile them to eBPF, with [MLIR](https://mlir.llvm.org/) considered as the compiler infrastructure.
+
+Goals:
+
+- **Verifier-aware code generation.** Produce programs designed to satisfy the Linux BPF verifier, reducing trial and error.
+- **Stateful constructs.** First-class support for per-flow and per-process state.
+- **A path to portable output.** Target BTF-based CO-RE for portability across kernel versions.
+
+A compiler can be built to emit verifier-friendly code and be tested against a matrix of kernel versions. It cannot offer an absolute guarantee of verifier acceptance, because acceptance depends on the kernel version, enabled features, available helpers, and program complexity limits. Equally, "free of memory bugs" applies to the generated programs only to the extent the language semantics and compiler are verified.
+
+In the intended layering, AmphiLang is the policy and compile-time layer, and the runtime (the Cerberus-Core concept) loads and manages compiled programs. Status: Research.
+
+## The Glass Box Philosophy
+
+Amphi treats opaque automation as a liability in critical infrastructure. The Glass Box principle requires that any automated action be explainable and auditable.
+
+For each decision, the system should be able to show:
+
+1. **Inputs**: which events and features were considered.
+2. **Reasoning**: which rule or model version produced the assessment, and its score.
+3. **Confidence and its limits**: a model confidence score is a statistical output, **not proof of an attack**. Scores need calibration against measured false-positive and false-negative rates before they can gate any action.
+4. **Action taken**, and whether it was automatic or operator-approved.
+5. **Reversal path**.
+
+**Human-in-the-Loop** is built on this. The planned policy profiles are:
+
+| Profile | Intended behavior |
+| --- | --- |
+| `learning` | Observe and record. Never take blocking action. |
+| `balanced` | Act automatically only on high-confidence, low-blast-radius responses; escalate the rest to an operator. |
+| `paranoid` | Strongest enforcement, with correspondingly higher risk of disrupting legitimate workloads. |
+
+Explainability techniques (human-readable justifications for Brain decisions) are Research. The profile mechanism is Planned.
+
+## Operational Lifecycle
+
+The following describes the intended lifecycle. None of it is implemented.
+
+### Startup (`amphi start`)
+
+1. **Bootstrapping and integrity check**: verify kernel support for required BPF features and, where available, platform integrity measurements.
+2. **Probe loading**: load compiled eBPF objects and attach them to the configured hooks.
+3. **Optional swarm synchronization**: connect to a federated cluster to receive validated threat indicators.
+
+### Operational states
+
+| Command | eBPF probes | Analysis (Brain) | Forensic logging |
+| --- | --- | --- | --- |
+| `pause` | Attached (passive monitoring) | Disabled | Active |
+| `stop` | Detached | Disabled | Inactive |
+| `shutdown` | Detached and cleaned | Disabled | Removed |
+
+**Open design question:** `shutdown` as originally specified clears forensic data. For critical infrastructure, a default of deleting evidence is risky and may conflict with retention requirements. A safer default is to export or retain evidence by policy and delete only on explicit, authenticated request.
+
+### Fail-closed supervision
+
+A watchdog supervises the agent. If Amphi is stopped without authorization, the intended behavior is to alert and withhold trust as described in [Hardware Root of Trust](#hardware-root-of-trust). Placeholders exist at `daemon/watchdog/monitor.py` and `daemon/watchdog/tpm_lock.sh`.
+
+## CLI Design
+
+The CLI is a **design proposal**. The only evidence in the repository is empty placeholder modules for `start` and `isolate` under `cli/commands/`. Command names and semantics may change.
+
+### `amphi` commands
+
+| Group | Command | Intended behavior | Status |
+| --- | --- | --- | --- |
+| Lifecycle | `amphi start` / `pause` / `stop` / `shutdown` | Control the agent as described in [Operational Lifecycle](#operational-lifecycle). | Planned (`start` placeholder exists) |
+| Health | `amphi status` | Show agent and probe health and recent detections. | Planned |
+| Health | `amphi pulse` | Verify the integrity and liveness link between user-space agent and kernel probes. | Planned |
+| Health | `amphi audit` | Produce a report of recent actions and decisions for review. | Planned |
+| Response | `amphi isolate <PID>` | Move a process into a constrained cgroup under policy. | Planned (placeholder exists) |
+| Response | `amphi simulate <type>` | Run synthetic, non-destructive behaviors to test detection. | Planned |
+| Policy | `amphi policy --set <mode>` | Switch among `learning`, `balanced`, and `paranoid`. | Planned |
+| Policy | `amphi config --reload` | Reload configuration without restarting the agent. | Planned |
+| Forensics | `amphi dump <incident_id>` | Export the evidence captured for an incident. | Research |
+| Forensics | `amphi replay <incident_id>` | Replay an incident in an isolated environment. | Research |
+| Swarm | `amphi swarm-join <token>` | Join a federated cluster. | Research |
+| Swarm | `amphi vaccinate <threat_id>` | Exchange a validated threat indicator with the cluster. | Research |
+
+### Proposed `cb` interface (Cerberus-Core)
+
+| Command | Intended behavior |
+| --- | --- |
+| `cb run` | Start the engine after privilege and integrity checks. |
+| `cb status` | Read telemetry from kernel ring buffers. |
+| `cb watch` | Live view for anomaly hunting. |
+| `cb freeze <PID>` | Constrain a process with cgroups v2 instead of killing it, to preserve evidence. |
+
+Having both `amphi` and `cb` is an open question: they may be merged into one command surface.
+
+## Self-Healing and Decision Engine
+
+Self-healing here means **policy-bound automated response**, structured as an OODA loop.
+
+```mermaid
+flowchart TD
+    A["Observe<br/>kernel and system telemetry"] --> B["Orient<br/>behavioral analysis with explanation"]
+    B --> C{"Decide<br/>policy and confidence check"}
+    C -->|"low risk"| D["Record only"]
+    C -->|"within autonomous policy"| E["Act<br/>bounded, reversible response"]
+    C -->|"high impact or low confidence"| F["Escalate<br/>request operator approval"]
+    F -->|"approved"| E
+    E --> G["Notify and log<br/>decision, evidence, action"]
+    D --> G
+    F -->|"rejected or timeout"| G
+    G --> A
+```
+
+A **decision engine** evaluates rules against assessments and decides whether the response is automatic or requires approval. Its placement is an open design question: it may live in the Amphi Orchestrator or be provided by an external platform such as KORE.
+
+### Example policy (illustrative pseudo-configuration)
+
+The following is **not** a supported schema. It illustrates the intended shape of policy.
+
+```yaml
+# Illustrative pseudo-configuration, not a real or supported format.
+rules:
+  - name: "high-confidence-anomalous-process"
+    when:
+      assessment: "behavioral_anomaly"
+      min_confidence: 0.95          # thresholds must be calibrated, not assumed
+    action: "throttle_in_cgroup"    # bounded and reversible
+    requires_approval: false
+    notify: "immediate"
+
+  - name: "possible-data-exfiltration"
+    when:
+      assessment: "anomalous_egress"
+      min_confidence: 0.80
+    action: "isolate_and_capture_evidence"
+    requires_approval: true         # high impact: a human decides
+    notify: "immediate"
+
+  - name: "low-confidence-anomaly"
+    when:
+      assessment: "behavioral_anomaly"
+      max_confidence: 0.80
+    action: "alert_only"
+    requires_approval: false
+    notify: "digest"
+```
+
+### Guardrails
+
+Automated response needs protections of its own: per-action rate limits, a maximum blast radius, an allowlist of critical processes that are never auto-contained, dry-run mode, and a global kill switch. Broader self-healing actions mentioned in the original vision, such as rotating secrets or restarting workloads from clean images, depend on external systems and are Research.
+
+## Swarm Intelligence
+
+Swarm Intelligence is the long-term idea of nodes sharing **validated threat indicators** (informally "vaccines") so that an attack observed on one node can improve detection on others.
+
+Realistically, the goal is shorter time-to-detection across participants, not guaranteed immunity. A shared indicator is only as good as its validation. Required foundations:
+
+| Concern | Direction |
+| --- | --- |
+| **Node identity and transport** | Mutual TLS, with node identity rooted in hardware attestation where available. |
+| **Indicator integrity** | Signed, versioned indicators with provenance. |
+| **Poisoning and abuse** | Validation and staging before indicators can trigger enforcement; a malicious or buggy node must not be able to cause cluster-wide disruption. |
+| **Privacy** | Strip or protect sensitive data before sharing. |
+
+**Differential Privacy (DP)** is a candidate privacy mechanism, but it is a formal framework, not a switch. Using it requires a defined threat model, a data representation with bounded sensitivity, a specific mechanism (for example Laplace or Gaussian noise), and an explicit privacy budget (epsilon and delta). Noise also degrades the precision of a shared indicator, so there is a real utility-versus-privacy trade-off. Other techniques, such as secure aggregation, may be more suitable for some data. Zero-knowledge proofs for proving detection without revealing details are a more speculative direction.
+
+Status: Research.
+
+## Security Model and Architectural Risks
+
+### Assumptions and non-goals
+
+- Amphi is a defense-in-depth layer. It does not replace patching, least-privilege design, network segmentation, or conventional endpoint protection.
+- An attacker who obtains full kernel-level control can defeat any host-based defense. Amphi aims to raise the cost of attack and make tampering detectable, not to be unbreakable.
+- Amphi will itself be privileged software, so it is part of the attack surface and must be built and reviewed accordingly.
+
+> The `docs/threat-model.md` file is currently an empty placeholder. A formal threat model is a required deliverable for Phase 1.
+
+### Claims that need qualification
+
+The original project notes contained statements that were stronger than the engineering supports. This table records the corrected position.
+
+| Original-style claim | Technical reality | Design response |
 | --- | --- | --- |
-| **Phase 1 (MVP)** | **eBPF Observability** | Sell "Amphi Insight": total visibility with zero latency. |
-| **Phase 2 (Scale)** | **Rust Enforcer** | Add autonomous containment capabilities via Cgroups. |
-| **Phase 3 (Cognitive)** | **Mojo Brain** | Deliver proactive behavioral Zero-Day detection. |
-| **Phase 4 (Federated)** | **Swarm Intelligence** | Monetize collective defense through ecosystem-wide learning. |
+| The eBPF verifier makes kernel crashes structurally impossible. | The verifier statically rejects many unsafe programs at load time. It does not guarantee the absence of kernel crashes: kernel and verifier bugs, helper misuse, and excessive resource use remain possible. | Keep programs minimal, test across a kernel matrix, bound map memory, and make probes unloadable on demand. |
+| Uprobes on `SSL_read` and `SSL_write` give 100% visibility into encrypted traffic. | Coverage is partial: static linking, other TLS stacks, user-space QUIC, and kTLS are not covered. | Document supported libraries and treat coverage as a measured quantity. |
+| Cgroups v2 provides a sandbox. | It controls resources. It does not restrict privileges or access. | Combine with namespaces, seccomp, LSM, and network policy. |
+| A TPM locks the node when tampered with. | A TPM provides measurement, attestation, and key sealing. It does not enforce blocking by itself. | Implement lock-down in a watchdog and key policy; rely on remote attestation. |
+| Rust guarantees the Enforcer cannot fail. | Rust prevents classes of memory errors in safe code. It does not prevent logic errors, panics, or bad decisions. | Bounded actions, rate limits, dry-run, and tests. |
+| IRL predicts the attacker's next three moves. | IRL infers likely objectives from observed behavior under assumptions. It yields probabilistic hypotheses. | Treat as research; never use as the sole basis for action. |
+| Differential Privacy hides everything while preserving the exact pattern. | DP is a trade-off governed by a privacy budget, and requires a formal definition of what is protected. | Define the model and parameters before claiming privacy. |
+| Zero latency, zero overhead, 100 Gbps, millions of events per second. | These are performance claims with no measurements. | No numbers will be published without a reproducible benchmark. |
+| A 95% AI confidence score confirms an attack. | A score is a model output, not proof. It is only meaningful if calibrated. | Gate high-impact actions on human review. |
+| Cerberus detects obfuscated payloads before they execute. | PMC anomalies are heuristic and noisy. | Use as one corroborating signal. |
 
----
+### Principal architectural risks
 
-## 🏛️ Detalhamento da Arquitetura (Deep Dive)
+| Risk | Description | Mitigation direction |
+| --- | --- | --- |
+| **Kernel instability** | Kernel-resident code expands the blast radius of mistakes. | Minimal probes, verifier plus kernel-matrix CI, safe unload, canary rollouts. |
+| **Performance overhead** | Syscall tracing and uprobes cost CPU, especially at high event rates. | Early filtering, per-hook budgets, published benchmarks with a clear methodology. |
+| **False positives** | Legitimate updates or traffic spikes can resemble anomalies. | Observation mode first, calibrated thresholds, approval gates, allowlists. |
+| **Self-compromise** | A privileged component is an attractive target. | Integrity checks, minimal privileges, signed artifacts, attestation. |
+| **Evidence sensitivity** | Forensic captures may hold secrets and personal data. | Encryption, retention policy, access control. |
+| **Poisoned swarm input** | Shared indicators can be forged or erroneous. | Signing, validation, staged rollout. |
 
-O Amphi funciona como um organismo composto por sete especializações tecnológicas (órgãos), cada uma focada em uma função crítica de sobrevivência:
+## Development Roadmap
 
-1. **Nerves (eBPF / C) – A Percepção**
-* **Função:** Monitoramento ininterrupto de eventos de kernel (Syscalls, Networking, Disk I/O).
-* **Por que:** É a única forma de obter visibilidade total sem injetar latência. O eBPF permite que o Amphi "sinta" o que está acontecendo sem que o invasor consiga mascarar sua presença através de bibliotecas de usuário (user-space hooks).
+The roadmap is ordered by dependency and feasibility. Dates are intentionally omitted.
 
-
-2. **Filter (C++) – O Sistema Límbico**
-* **Função:** Processamento de sinais brutos e redução de ruído.
-* **Por que:** O kernel gera milhões de eventos por segundo. O C++ é o "filtro" que descarta o tráfego legítimo (ruído) e passa apenas as anomalias relevantes para a IA. É a camada de alta performance que garante que o "cérebro" não sofra sobrecarga.
-
-
-3. **Brain (Mojo) – A Cognição Adaptativa**
-* **Função:** Inferência preditiva baseada em comportamento (Behavioral Analysis).
-* **Por que:** Diferente de firewalls que buscam por "assinaturas de vírus" (conhecimento passado), o motor Mojo analisa a intenção (conhecimento presente). Se um processo começa a ler arquivos de sistema que nunca acessou, o Mojo classifica aquilo como anomalia de comportamento, detectando ataques Zero-Day que nenhuma lista de bloqueio conseguiria prever.
-
-
-4. **Enforcer (Rust) – A Resposta Imunológica**
-* **Função:** Isolamento, bloqueio e mitigação.
-* **Por que:** Em uma emergência, falhas de software são inaceitáveis. O Rust garante que as ações de defesa (kill, block, isolate) sejam executadas com Memory Safety. O sistema de defesa nunca derrubará o servidor por um erro de segmentação (Memory Leak/Segmentation Fault).
-
-
-5. **Memory (TS / SQL) – O Registro Forense (The Black Box)**
-* **Função:** Armazenamento de estado, reconstrução de incidentes e análise histórica.
-* **Por que:** Esta é a "Caixa-Preta" do avião. Ela não apenas grava logs; ela armazena snapshots de memória e o contexto completo da rede no momento da invasão. Isso permite o *Digital Twin Playback*: você pode simular a invasão novamente em ambiente fechado para estudar o exploit.
-
-
-6. **Ghost (Go / Envoy) – A Decepção Estratégica (MTD)**
-* **Função:** Moving Target Defense (MTD) e Honeypots dinâmicos.
-* **Por que:** A melhor defesa é fazer o atacante perder tempo. O Amphi rotaciona portas e rotas de serviço dinamicamente. O atacante acha que está explorando um alvo, mas está sendo guiado para uma armadilha (Sandbox), enquanto o serviço real está "em outro lugar" na topologia da rede.
-
-
-7. **Orchestrator (Python) – O Sistema Nervoso Central**
-* **Função:** Agregação de telemetria, injeção dinâmica de políticas, controle de automação e integração externa (Glue-Code).
-* **Por que:** Enquanto Rust e C/eBPF controlam os "reflexos" mecânicos e instantâneos do sistema, o Python opera como a mente consciente para gerenciamento estratégico. Ele unifica os órgãos do Amphi, facilitando a automação de ferramentas forenses, orquestração do Modo Caos e integração nativa com SIEMs (Splunk, ELK) e APIs de nuvem sem comprometer o caminho crítico de baixa latência.
-
-
-
----
-
-### 🔬 Tecnologias Avançadas
-
-#### 🌐 Encrypted Traffic Vision | Visão de Tráfego Encriptado
-
-* **[EN]** Modern ransomware and data exfiltration malware heavily leverage TLS 1.3 or QUIC protocols, rendering traditional kernel-space eBPF inspection (XDP/TC) blind to the encrypted payloads. To bypass this limitation, the Nerves module implements user-space dynamic tracing via uprobes and uretprobes. By anchoring directly into the runtime memory of cryptographic libraries like OpenSSL and BoringSSL (specifically targeting `SSL_read` and `SSL_write`), Amphi intercepts and reads the raw plaintext payload a millisecond before encryption occurs and the packet hits the network interface. This achieves 100% visibility into malicious payloads without the overhead of a decryption proxy or the need to break mutual TLS (mTLS).
-* **[PT-BR]** Ransomwares modernos e malwares de exfiltração utilizam intensamente os protocolos TLS 1.3 ou QUIC, tornando a inspeção tradicional de eBPF no kernel-space (XDP/TC) cega para pacotes criptografados. Para superar essa limitação, o módulo Nerves implementa rastreamento dinâmico em user-space via uprobes e uretprobes. Ao ancorar-se diretamente na memória de execução de bibliotecas criptográficas como OpenSSL e BoringSSL (visando especificamente as funções `SSL_read` e `SSL_write`), o Amphi intercepta e lê o payload em texto plano um milissegundo antes da criptografia acontecer e o pacote ser enviado para a interface de rede. Isso garante visibilidade total contra tráfego malicioso sem o overhead de um proxy de interceptação ou a necessidade de quebrar o mTLS.
-
-#### ⏳ Micro-Segmentation & Throttling | Micro-segmentação e Estrangulamento
-
-* **[EN]** Immediately terminating a compromised process (`SIGKILL`) alerts an advanced adversary that their presence has been discovered, triggering automated evasion or anti-forensics measures. The Enforcer module addresses this by leveraging Linux Cgroups v2 for silent, dynamic throttling. Instead of killing or freezing the thread, the Rust agent seamlessly migrates the malicious process into a highly restricted, isolated cgroup namespace. Here, it slashes the process's CPU quota (e.g., down to 1%) and heavily constrains its disk I/O bandwidth (IOPS). The malware continues executing, but at such an agonizingly slow velocity that a ransomware attack that would normally destroy a disk in seconds now takes years to complete, buying infinite time for the forensics engine to capture live memory states.
-* **[PT-BR]** Matar imediatamente um processo comprometido (`SIGKILL`) alerta um adversário avançado de que sua presença foi descoberta, disparando contramedidas automatizadas de evasão ou anti-forense. O módulo Enforcer resolve isso utilizando o Cgroups v2 do Linux para realizar um estrangulamento silencioso e dinâmico. Em vez de derrubar ou congelar a thread, o agente em Rust migra perfeitamente o processo malicioso para um namespace isolado e altamente restrito do cgroup. Nele, o sistema corta a cota de CPU do processo (ex: para 1%) e restringe severamente a banda de I/O de disco (IOPS). O malware continua rodando, mas a uma velocidade tão ínfima que um ataque de ransomware que destruiria o disco em segundos passa a levar anos, garantindo tempo infinito para o motor forense capturar estados de memória viva.
-
-#### ⚡ Side-Channel & Hardware Monitoring | Monitoramento de Side-Channel por Hardware
-
-* **[EN]** Highly sophisticated exploits (such as Spectre, Meltdown, or stealthy, low-footprint cryptominers) often leave no footprints in traditional network connections or standard disk I/O syscalls. To detect these microscopic vectors, Amphi bridges its eBPF subsystem with the Linux `perf_events` API to continuously sample Hardware Performance Counters (PMCs) directly from the CPU. The system monitors core microarchitectural metrics including L1/L2/L3 Cache Misses, Branch Prediction Failures, and Instructions Per Cycle (IPC) anomalies. If a seemingly benign or legitimate user-space application begins to induce rhythmic cache misses or abnormal branch mispredictions, the Brain (Mojo) immediately correlates the hardware telemetry to isolate the hardware side-channel attack in real-time.
-* **[PT-BR]** Exploits extremamente sofisticados (como Spectre, Meltdown ou cryptominers furtivos de baixo consumo) frequentemente não deixam pegadas em conexões de rede ou chamadas de sistema padrão de I/O de disco. Para detectar esses vetores microscópicos, o Amphi conecta seu subsistema eBPF com a API `perf_events` do Linux para amostrar continuamente os Hardware Performance Counters (PMCs) diretamente da CPU. O sistema monitora métricas microarquiteturais críticas, incluindo Cache Misses (L1/L2/L3), falhas de predição de desvio (Branch Prediction Failures) e anomalias de Instruções por Ciclo (IPC). Se uma aplicação aparentemente legítima em user-space começa a induzir falhas rítmicas de cache ou desvios anômalos, o Brain (Mojo) correlaciona a telemetria de hardware para isolar o ataque de canal lateral em tempo real.
-
-#### 🛡️ Swarm Differential Privacy | Privacidade Diferencial no Enxame
-
-* **[EN]** When sharing behavioral threat signatures ("vaccines") across the Federated Swarm Ecosystem, there is an inherent risk of accidentally leaking sensitive application runtime data, memory configurations, or payload fragments from the initially targeted server. Amphi mitigates this privacy vector by executing a localized Differential Privacy (DP) mathematical algorithm before broadcasting any telemetry to the cluster. The node injects calculated statistical noise into the threat vector, mathematically masking any Personally Identifiable Information (PII), keys, or confidential customer data. This ensures that while the exact, unique cryptographic and behavioral pattern of the malware is perfectly preserved for collective defense, the host node identity and context remain completely unrecoverable, fulfilling strict Zero-Trust compliance.
-* **[PT-BR]** Ao compartilhar vacinas comportamentais contra ameaças (assinaturas de ataque) por todo o Ecossistema Federado, existe o risco inerente de vazar acidentalmente dados sensíveis de execução, configurações de memória ou fragmentos de payload do servidor inicialmente atacado. O Amphi mitiga esse vetor de privacidade executando um algoritmo matemático de Privacidade Diferencial (DP) local antes de transmitir qualquer telemetria ao cluster. O nó injeta um ruído estatístico calculado no vetor da ameaça, mascarando matematicamente qualquer Informação de Identificação Pessoal (PII), chaves ou dados confidenciais do cliente. Isso garante que, enquanto o padrão comportamental e criptográfico exato do malware é preservado para a defesa coletiva, o contexto e a identidade do nó de origem permanecem irrecuperáveis, cumprindo regras estritas de conformidade Zero-Trust.
-
-#### 🧪 Continuous Auto-Audit (Chaos Mode) | Auto-Auditoria Contínua (Modo Caos)
-
-* **[EN]** To guarantee that the system's autonomous immunological defenses remain functional and un-tampered during prolonged operational periods without real-world security incidents, Amphi introduces a continuous Chaos Engineering submodule. During designated low-traffic, low-risk infrastructure windows, this module safely injects non-destructive, synthetic pseudo-malware processes into the runtime environment. These automated agents attempt to simulate common adversarial actions, such as reading restricted system configurations or spawning unauthorized reverse shells. This continuously tests if the eBPF kernel hooks, user-space uprobes, and Ghost (MTD) deceptive honey-ports are active and responsive, generating a real-time "Immunological Health Score" directly on the central dashboard.
-* **[PT-BR]** Para garantir que as defesas imunológicas autônomas do sistema permaneçam totalmente operacionais e invioladas durante longos períodos operacionais sem incidentes reais de segurança, o Amphi introduz um submódulo contínuo de Chaos Engineering. Durante janelas designadas de baixo tráfego e baixo risco na infraestrutura, este módulo injeta de forma segura processos sintéticos não-destrutivos (pseudomalwares) no ambiente de runtime. Esses agentes automatizados tentam simular ações adversárias comuns, como a leitura de configurações restritas do sistema ou a criação de shells reversas não autorizadas. Isso testa continuamente se os hooks de eBPF no kernel, as uprobes em user-space e as portas falsas do Ghost (MTD) estão ativos e responsivos, gerando um "Score de Saúde Imunológica" em tempo real diretamente no dashboard central.
-
----
-
-## 🛡️ Casos de Uso na Prática (The Amphi in Action)
-
-* **Ransomware Zero-Day:** Um ransomware desconhecido tenta encriptar o disco. O Brain (Mojo) detecta uma anomalia na taxa de IOPS e syscalls de escrita não naturais. O Enforcer (Rust) congela o processo em microssegundos antes que o primeiro arquivo seja corrompido.
-* **Vazamento de Dados (Exfiltration):** Um atacante compromete uma aplicação web e tenta enviar dados para um IP na Rússia. O Nerves (eBPF) detecta o socket anômalo. O Ghost (Go/Envoy) intercepta a conexão e redireciona o tráfego do atacante para um Honeypot, fazendo-o acreditar que o download está acontecendo, enquanto o time de segurança é alertado.
-
----
-
-## 🛡️ Amphi: Ciclo de Vida Operacional e Controle
-
-*(Operational Lifecycle & Control)*
-
-### 1. Initialization Workflow | Fluxo de Inicialização (`amphi start`)
-
-* **[EN]** When you execute `amphi start`, the system executes three security layers in milliseconds:
-* **Bootstrapping (Integrity Check):** Verifies kernel flags for eBPF and ensures required modules (`bpf_prog`) can be loaded.
-* **Data Plane Injection:** The Rust agent injects compiled `.o` (eBPF) objects directly into kernel hooks (XDP for network, Tracepoints for syscalls).
-* **Swarm Synchronization:** Connects your node to the Federated Ecosystem to fetch the latest "vaccines" (security patterns).
-
-
-* **[PT-BR]** Quando você executa `amphi start`, o sistema executa três camadas de segurança em milissegundos:
-* **Bootstrapping (Verificação de Integridade):** Verifica as flags do Kernel para eBPF e garante que os módulos necessários (`bpf_prog`) possam ser carregados.
-* **Injeção do Data Plane:** O agente em Rust injeta os objetos compilados `.o` (eBPF) diretamente nos hooks do kernel (XDP para rede, Tracepoints para syscalls).
-* **Sincronização do Enxame:** Conecta seu nó ao Ecossistema Federado para buscar as "vacinas" (padrões de segurança) mais recentes.
-
-
-
-### 2. Cluster Connectivity | Conectividade de Cluster (`amphi connect`)
-
-Transforms an isolated server into a Collective Intelligence Node. / Transforma um servidor isolado em um Nó de Inteligência Coletiva.
-
-* **Authentication:** Uses mutual TLS (mTLS) to secure communication with the cluster or private dashboard. / Utiliza mTLS (Mutual TLS) para garantir uma comunicação segura com o cluster ou painel de controle privado.
-* **Heartbeat:** Establishes a constant telemetry channel, sending full exploit context, not just raw logs. / Estabelece um canal de telemetria constante, enviando o contexto completo do exploit, não apenas logs brutos.
-
-### 3. Operational States | Estados Operacionais
-
-Because Amphi is active kernel-level security, stopping it requires specific states to maintain system integrity. / Como o Amphi é uma segurança ativa ao nível do Kernel, parar o sistema exige estados específicos para manter a integridade do sistema.
-
-| Command | Kernel State (eBPF) | AI State (Brain) | Logs (Black Box) |
+| Phase | Focus | Scope | Status |
 | --- | --- | --- | --- |
-| `pause` | Active (Monitoring) | Disabled | Active (Logging) |
-| `stop` | Detached (Removed) | Disabled | Inactive |
-| `shutdown` | Removed + Cleaned | Disabled | Removed |
-
-**Definitions | Definições:**
-
-* `amphi pause`: Use for maintenance (e.g., patching). It stops blocking/analysis but keeps monitoring active. / Use para manutenção (ex: atualizar o sistema). Interrompe bloqueios e análises, mas mantém o monitoramento passivo.
-* `amphi stop`: Shuts down the agent and detaches all BPF probes. / Encerra o agente e desanexa todas as sondas BPF.
-* `amphi shutdown`: Total de-installation. Clears all BPF Maps and forensics cache. Requires secondary authentication if auto-repair is active. / Desinstalação total. Limpa todos os BPF Maps e o cache forense. Exige autenticação secundária se o auto-reparo estiver ativo.
-
----
-
-## 💻 Amphi CLI Ecosystem / Ecossistema de CLI Amphi
-
-### 1. Vital Signs / Sinais Vitais e Diagnóstico
-
-Real-time health metrics to ensure the system runtime is coherent and un-tampered. / Métricas de saúde em tempo real para garantir que a execução do sistema esteja coerente e livre de adulterações.
-
-* `amphi status`: Returns a high-level telemetry dashboard. (e.g., "Immunological Health: 98% | Blocked Threats: 4 | eBPF Hook Latency: 0.02ms"). / Retorna um dashboard rápido de telemetria.
-* `amphi pulse`: Cryptographically verifies the real-time heartbeat synchronization between the user-space agent and low-level kernel hooks. / Verifica criptograficamente a sincronização do batimento cardíaco entre o agente em user-space e os hooks no kernel.
-* `amphi audit`: Compiles a structural report of recent system modifications and historical blocks ("scar logs"), designed for strict compliance audits. / Compila um relatório estrutural de modificações recentes no sistema e históricos de bloqueio ("logs de cicatrizes").
-
-### 2. Immune Response / Resposta Imunológica Ativa
-
-Manual overrides to force behavioral containment and collective swarm updates. / Substituições manuais para forçar a contenção comportamental e atualizações coletivas do enxame.
-
-* `amphi vaccinate <threat_id>`: Forces the immediate pull of a specific threat signature vector from the cluster network or broadcasts a locally generated threat profile to the Federated Swarm. / Força o download imediato ou transmite um perfil de ameaça para o Enxame Federado.
-* `amphi isolate <PID>`: Direct manual intervention. Instantly migrates a suspicious Process ID into the highly constrained, throttled Linux Cgroups v2 sandbox namespace. / Intervenção manual direta. Migra instantaneamente um PID suspeito para o namespace isolado do Cgroups v2.
-* `amphi simulate <type>`: Triggers the continuous Chaos Engineering submodule manually to test specific active defense vectors (e.g., `amphi simulate ransomware` or `amphi simulate ddos`). / Ativa o submódulo de Chaos Engineering de forma manual para testar vetores de defesa.
-
-### 3. Nervous System / Configuração e Políticas (System Overlays)
-
-Fine-tuning adaptive operational modes without disrupting critical data-plane traffic. / Ajuste fino de modos operacionais adaptativos sem interromper o tráfego crítico.
-
-* `amphi config --reload`: Dynamically reloads the `amphi.yaml` rules manifest with absolute zero downtime, updating active filter meshes instantly. / Recarrega dinamicamente as regras com zero downtime.
-* `amphi swarm-join <token>`: Authenticates and binds the current node into the local or global cluster, enabling decentralized P2P threat vector updates. / Autentica e vincula o nó atual ao cluster, habilitando atualizações P2P.
-* `amphi policy --set <mode>`: Shifts global defense logic behavior profile / Alterna o perfil global de defesa:
-* **paranoid**: Maximum enforcement. Immediate isolation and lock on any micro-architectural or network anomaly. / Execução máxima. Isolamento imediato.
-* **balanced**: Standard behavioral operation. Mitigation triggers rely on high-confidence Mojo AI classification score. / Operação padrão baseada em IA de alta confiança.
-* **learning**: Passive observation mesh. Tracks anomalies, registers logs, but strictly drops blocking actions. / Observação passiva, rastreia mas não bloqueia.
-
-
-
-### 4. Forensics / Investigação da Caixa-Preta (Black Box)
-
-Extracting contextual infrastructure footprints following a targeted malicious incident. / Extração de pegadas contextuais após um incidente.
-
-* `amphi dump <incident_id>`: Exports a highly secure, isolated execution memory snapshot and the historical network state captured at the exact microsecond of the breach. / Exporta snapshot isolado de memória e estado de rede do momento exato da invasão.
-* `amphi replay <incident_id>`: Spawns a secure Digital Twin sandbox topology to replay the recorded exploit footprint, mapping out precise adversarial methods. / Cria Gêmeo Digital (Digital Twin) seguro para reproduzir o exploit gravado.
-
-### 5. Command Matrix Summary / Resumo Estruturado de Comandos
-
-| Category / Categoria | Command / Comando | Action (EN) | Ação (PT-BR) |
-| --- | --- | --- | --- |
-| **Status** | `amphi status` | Real-time node structural telemetry & health scoreboard. | Telemetria estrutural e score de saúde do nó em tempo real. |
-| **Control** | `amphi policy` | Dynamically alters active runtime enforcement logic (learning, balanced, paranoid). | Altera dinamicamente as regras de execução ativa em runtime. |
-| **Response** | `amphi isolate` | Forces immediate automated process migration into the containment cgroup. | Força a migração imediata de um processo para o cgroup de contenção. |
-| **Swarm** | `amphi vaccinate` | Syncs behavioral vaccine profiles and rules across the decentralized P2P cluster. | Sincroniza perfis de vacinas comportamentais com o cluster P2P descentralizado. |
-| **Forensics** | `amphi dump` | Extracts secure memory snapshot and historical network state at the breach microsecond. | Exporta um snapshot de memória e o estado histórico da rede no microssegundo da invasão. |
-
-> ⚠️ **Engineering Note | Nota de Engenharia**
-> **[EN]** Implement a systemd watchdog. If Amphi is stopped without authorization or terminated by malware, the system should trigger a Fail-Closed (network lock) and alert the central dashboard.
-> **[PT-BR]** Implemente um systemd watchdog. Se o Amphi for parado sem autorização ou finalizado por malware, o sistema deve acionar um Fail-Closed (travamento de rede) e alertar o painel central imediatamente.
-
----
-
-## 🧬 Inteligência em Enxame (Swarm Intelligence)
-
-O Amphi não é apenas local; ele é um Ecossistema Federado.
-
-* **Aprendizado Federado:** Cada nó (servidor) é um estudante. Quando o nó A aprende que uma sequência de pacotes específica é um ataque, ele cria uma "vacina" (um vetor de detecção). Essa vacina é compartilhada via protocolo de rede com todos os outros nós do cluster.
-* **Imunidade de Rebanho:** Uma ameaça detectada em um servidor da ponta torna todo o seu Data Center imune a ela em segundos. O atacante nunca terá sucesso duas vezes.
-* **Auto-Reparação (Self-Healing):** Se o Amphi detecta um processo comprometido, ele não apenas bloqueia; ele rotaciona segredos (API Keys, tokens), reinicia os contêineres a partir de uma imagem limpa e notifica o painel central, tudo isso sem intervenção humana.
-
----
-
-## ⚖️ Architectural Risks & Mitigations | Riscos Arquiteturais e Mitigações
-
-### 1. "Security by Excess" Risk (Kernel Instability) | O Risco de "Segurança por Excesso" (Instabilidade do Kernel)
-
-* **[EN] Risk:** Operating deep within kernel-space using eBPF hooks poses a theoretical risk of causing a Kernel Panic (completely crashing the system) if logic errors, unauthorized memory access, or infinite loops occur in the `bpf_prog`.
-* **Mitigation:** Amphi builds completely upon the mathematical guarantees of the Linux platform's native BPF Verifier. Before any code is loaded into the kernel, the verifier acts as a strict static analyzer that completely rejects unsafe memory paths, uninitialized variables, or unbounded loops, making runtime kernel crashes structurally impossible.
-
-
-* **[PT-BR] Risco:** O uso de eBPF e hooks no Kernel pode causar um Kernel Panic (o sistema trava completamente) se o seu código tiver um erro de lógica, acesso indevido à memória ou um laço infinito no `bpf_prog`.
-* **Mitigação:** O Amphi é construído totalmente sobre as garantias matemáticas do BPF Verifier nativo da plataforma Linux. Antes que qualquer código seja carregado no kernel, o verificador impede que código inseguro ou que possa travar o sistema seja inserido, garantindo a estabilidade operacional da própria plataforma.
-
-
-
-### 2. Performance Overhead (Latency vs. Protection) | Overhead de Performance (Latência vs. Proteção)
-
-* **[EN] Risk:** Even though eBPF runs at near-native hardware speed, continuous monitoring of intensive system-wide syscalls and heavy user-space uprobe tracing on cryptographic libraries (like OpenSSL) can degrade host application performance under maximum throughput conditions.
-* **Mitigation:** The C++ Filter module is designed exactly as an ultra-fast triage layer to eliminate noise at line-rate. Only telemetry that passes this localized pre-classification is offloaded to the complex AI engine (Mojo), keeping the main execution hot-path overhead effectively close to zero.
-
-
-* **[PT-BR] Risco:** Embora o eBPF seja extremamente rápido, o monitoramento constante de syscalls, especialmente com inspeção de uprobes em bibliotecas criptográficas (OpenSSL), pode degradar a performance da aplicação hospedeira sob carga pesada.
-* **Mitigação:** O módulo Filter (C++) serve exatamente para isso: realizar o descarte rápido de ruído. Apenas eventos anômalos que passaram por esse filtro de pré-classificação ultrarrápido são enviados para a análise pesada da IA (Mojo), mantendo o overhead geral próximo de zero.
-
-
-
-### 3. "False Positive" Risk (Business Disruption) | Risco de "Falso Positivo" (O Bloqueador de Negócio)
-
-* **[EN] Risk:** If the behavioral AI engine (Brain/Mojo) mistakenly flags a legitimate massive system update or an unexpected business sales traffic spike as an active zero-day exploit, it could prematurely terminate or isolate critical infrastructure services.
-* **Mitigation:** The lifecycle enforces a non-blocking "Observation Mode" (passive monitoring) before moving into active enforcement. Furthermore, the core manifest implements strict "Fail-Safe" logic boundaries where, if the AI's classification confidence falls below a safe **threshold, the system defaults to generating high-priority alerts for manual review rather than initiating automated containment blocks.**
-
-
-* **[PT-BR] Risco:** Se a IA comportamental (Brain/Mojo) marcar erroneamente uma atualização massiva de sistema ou um pico de tráfego de vendas como um exploit zero-day, ela pode isolar ou derrubar prematuramente serviços críticos de infraestrutura.
-* **Mitigação:** O ciclo de vida impõe um "Modo de Observação" (monitoramento passivo) sem bloqueio antes de passar para a execução ativa. Além disso, o manifesto principal implementa limites lógicos estritos de "Fail-Safe" onde, se a confiança de classificação da IA cair abaixo de um limite seguro, **o sistema gera alertas de alta prioridade para analistas humanos em vez de executar bloqueios automatizados.**
-
-
----
-
-# 🐕 Cerberus-Core — Amphi Ecosystem
-
-## 📌 O Significado do Nome: O Guardião do Kernel | The Kernel Guardian
-
-### [PT-BR]
-Na mitologia grega, Cérbero (Cerberus) é o monstruoso cão de três cabeças que guarda os portões do submundo, garantindo que ninguém entre sem permissão e ninguém escape. No ecossistema Amphi, o Cerberus-Core assume exatamente essa função. Ele atua como o cão de guarda supremo e inabalável do Kernel do Sistema Operacional. Suas três cabeças representam as três dimensões analíticas que ele monitora simultaneamente, criando uma "prisão triangular" para qualquer ameaça:
-* **Primeira Cabeça (Rede/Lógica):** Vigia o estado e o contexto dos fluxos de dados.
-* **Segunda Cabeça (CPU/Física):** Vigia o comportamento e o estresse do hardware em nível de silício.
-* **Terceira Cabeça (Memória/Imunidade):** Vigia a integridade interna para garantir que a própria defesa nunca seja corrompida.
-
-### [EN]
-In Greek mythology, Cerberus is the monstrous three-headed hound that guards the gates of the underworld, ensuring no one enters without permission and no one escapes. Within the Amphi ecosystem, Cerberus-Core serves exactly this purpose. It acts as the ultimate, unyielding watchdog of the Operating System Kernel. Its three heads represent the three analytical dimensions it continuously monitors, establishing a "triangular prison" for any threat:
-* **First Head (Network/Logic):** Watches the state and context of data flows.
-* **Second Head (CPU/Physics):** Watches the behavior and stress of hardware at the silicon level.
-* **Third Head (Memory/Immunity):** Watches internal integrity to ensure the defense itself is never compromised.
-
----
-
-## ⚙️ Arquitetura Interna: Como as Três Cabeças Funcionam | Internal Architecture
-
-O Cerberus-Core não é apenas um filtro; é um organismo autônomo. Ele opera cruzando telemetria de três submódulos críticos que vivem entre o *kernel-space* e o *user-space*:
-
-### 1. `flow_state` (Rastreamento de Estado - A Rede | Stateful Tracking - The Network)
-* **[PT-BR]** O eBPF tradicional é *stateless* (analisa pacotes isolados). O Cerberus resolve isso injetando mapas de alta performance (*Shared Maps*). Cada conexão ganha um ciclo de vida persistente, permitindo que o Amphi identifique ataques fracionados em milhares de pacotes e exfiltrações "*low-and-slow*".
-* **[EN]** Traditional eBPF is stateless. Cerberus overcomes this by injecting high-performance memory structures (Shared Maps). Every connection is given a persistent lifecycle, allowing Amphi to piece together fragmented exploits and detect "low-and-slow" exfiltration attempts.
-
-### 2. `hardware_pmu` (Inspeção de Canal Lateral - A CPU | Side-Channel Inspection - The CPU)
-* **[PT-BR]** Malwares modernos ofuscam código para burlar assinaturas. O Cerberus ignora a assinatura e foca na física. Através dos PMCs (*Performance Monitoring Counters*), ele lê diretamente do processador. Se um *payload* ofuscado tentar se descompactar, ele gerará picos absurdos de *Cache-Misses* e *Branch Mispredictions*. A anomalia é pega antes da execução.
-* **[EN]** Modern malware obfuscates code to evade signatures. Cerberus ignores the signature and focuses on physics. By reading the PMCs (Performance Monitoring Counters) directly from the processor, it detects when an obfuscated payload attempts to unpack itself, causing drastic spikes in Cache-Misses and Branch Mispredictions. The anomaly is caught before execution.
-
-### 3. `self_guard` (Sentinela de Memória - A Autodefesa | Memory Sentinel - The Self-Defense)
-* **[PT-BR]** Se o invasor tentar atacar a própria engine (via injeção de *heap* ou *buffer overflow*), o Cerberus se defende. Ele utiliza *Guard Pages* e validação criptográfica (HMAC) ao redor de suas tabelas e ponteiros. Qualquer escrita não autorizada resulta em bloqueio instantâneo do atacante.
-* **[EN]** Should an attacker target the engine itself (via heap injection or buffer overflows), Cerberus strikes back. It surrounds its tables and pointers with Guard Pages and runtime cryptographic validation (HMAC). Any unauthorized write attempt instantly locks the attacker out.
-
----
-
-## 💻 A Interface de Comando: O `cb` CLI | The Command Interface
-
-Para gerenciar essa complexidade de nível de kernel, o Cerberus utiliza um protocolo de comandos DevOps de alta eficiência acionado pelo prefixo `cb`. Os comandos são gatilhos que atualizam os mapas eBPF e se comunicam assincronamente com o Orquestrador através de UNIX sockets:
-
-* **`cb run`**: Inicia a engine. Executa a validação de privilégios (*root*), checa a assinatura dos binários, carrega as regras via MorphBPF para contornar problemas de hardware (*NIC offsets*) e acorda as três cabeças simultaneamente. / *Bootstraps the engine. Validates root privileges, checks signatures, loads rules via MorphBPF, and awakens all three heads.*
-* **`cb status`**: Consulta os anéis de buffer (*Ring Buffers*) do kernel e devolve telemetria limpa e imediata (conexões rastreadas, estresse de CPU, integridade de memória). / *Queries the kernel's Ring Buffers and returns immediate telemetry.*
-* **`cb watch`**: Abre uma visão em tempo real focada na identificação de anomalias (similar ao `htop`, mas voltado para caça de ameaças ativas). / *Opens a real-time monitoring view tailored for anomaly identification.*
-* **`cb freeze <PID>`**: Comando de reflexo e contenção profunda. Não mata o processo (o que destruiria provas em memória), mas usa *Cgroups v2* para limitar a CPU do atacante a 1%, "congelando-o" para análise forense. / *A deep-containment reflex command. Throttles the attacker's CPU usage to 1% using Cgroups v2 instead of killing it.*
-
----
-
-## 🕸️ Integração com o Amphi Inteiro / Integration
-
-* **Entrada (MorphBPF):** Ajusta os pacotes independentemente de qual placa de rede (Intel, Mellanox) o servidor usa e os envia limpos ao `flow_state`.
-* **Correlação (`cerberus_orchestrator`):** Avalia os dados em nanossegundos. Se a Rede for anômala E a CPU der picos de erros físicos = Ataque Confirmado.
-* **Decisão Neural (Brain/Mojo):** Toda essa telemetria física e lógica alimenta os tensores do motor em Mojo. O Amphi usa isso para treinar sua Inteligência de Enxame via Aprendizado por Reforço Inverso (IRL), distribuindo a "vacina" para toda a rede antes que o ataque se repita.
-* **Linguagens Dominantes:** Rust (80%) para segurança de memória nativa e orquestração assíncrona; C++ (20%) para acesso direto e de zero-latência às APIs de monitoramento físico do Linux (`perf_event_open`).
-
----
-
-## 💎 AmphiLang: The Vertical Engine | O Motor Vertical
-
-* **Verifier-Aware:** A linguagem garante matematicamente que o código gerado será aceito pelo *Kernel Verifier*. Chega de "tentativa e erro" no eBPF.
-* **Stateful Security:** Monitoramento de fluxos de rede persistentes, identificando ataques lentos (*low-and-slow*) que firewalls comuns ignoram.
-* **Performance Absoluta:** Compilação direta via MLIR para eBPF *Bytecode*, unindo abstração de alto nível com a brutalidade do silício.
-
----
-
-## ⚙️ The Dual Nature: Language & Runtime | A Natureza Dual: Linguagem e Runtime
-
-* **[PT-BR]** O Amphi funciona através da simbiose entre dois componentes que operam em camadas distintas:
-  * **Como Linguagem (AmphiLang):** O nível de abstração (*Compiler Front-end*). Escreve-se lógica em sintaxe declarativa; o compilador MLIR garante que o programa seja livre de bugs de memória.
-  * **Como Programa (Cerberus-Core):** O *Runtime* (*Execution Engine*). Binário em Rust de alta performance que carrega o bytecode, gerencia a IA (Mojo) e orquestra a mitigação.
-* **[EN]** Amphi functions through the symbiosis of two components operating at distinct layers:
-  * **As a Language (AmphiLang):** The abstraction layer (Compiler Front-end). Logic is written in declarative syntax; the MLIR compiler ensures the program is free of memory bugs.
-  * **As a Program (Cerberus-Core):** The Runtime (Execution Engine). A high-performance Rust binary that loads the bytecode, manages the AI (Mojo), and orchestrates mitigation.
-
-
----
-
-
-Aqui está. O **README COMPLETO E DEFINITIVO**. Ele une a **visão do "Nunca mais seja acordado às 3h"** com a **explicação técnica completa** do ecossistema Amphi/KORE Platform, mostrando como a auto-cura e a segurança autônoma funcionam na prática.
-
----
-
-# 🛡️ Amphi / KORE Platform: The 3 AM Immune System
-### *"Never be woken up at 3 AM by a false alarm again."* 
-### *"Nunca mais seja acordado às 3h da manhã por um falso alarme."*
-
-<div align="center">
-  
-![Rust](https://img.shields.io/badge/Rust-1.70+-000000?style=for-the-badge&logo=rust)
-![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=for-the-badge&logo=go)
-![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python)
-![eBPF](https://img.shields.io/badge/eBPF-Kernel_Level-FF6B6B?style=for-the-badge)
-![Mojo](https://img.shields.io/badge/Mojo-AI_Predictive-FF4500?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)
-
-**Stop configuring alerts. Start growing an immune system.**  
-**Pare de configurar alertas. Comece a cultivar um sistema imunológico.**
-
-</div>
-
----
-
-## 📑 Table of Contents / Índice
-- [🇧🇷 Português](#-português)
-  - [O Problema: O Pânico das 3h da Manhã](#o-problema-o-pânico-das-3h-da-manhã)
-  - [A Solução: Um Sistema Imunológico, Não um Pager](#a-solução-um-sistema-imunológico-não-um-pager)
-  - [Arquitetura: Amphi é o Kernel, KORE é o Corpo](#arquitetura-amphi-é-o-kernel-kore-é-o-corpo)
-  - [O Loop de Auto-Cura (OODA)](#o-loop-de-auto-cura-ooda)
-  - [A Matriz de Decisão (Auto vs. Manual)](#a-matriz-de-decisão-auto-vs-manual)
-  - [Componentes do Ecossistema](#componentes-do-ecossistema)
-  - [Como Instalar](#como-instalar)
-  - [A Promessa das 3h](#a-promessa-das-3h)
-- [🇺🇸 English](#-english)
-  - [The Problem: The 3 AM Panic](#the-problem-the-3-am-panic)
-  - [The Solution: An Immune System, Not a Pager](#the-solution-an-immune-system-not-a-pager)
-  - [Architecture: Amphi is the Kernel, KORE is the Body](#architecture-amphi-is-the-kernel-kore-is-the-body)
-  - [The Self-Healing Loop (OODA)](#the-self-healing-loop-ooda)
-  - [The Decision Matrix (Auto vs. Manual)](#the-decision-matrix-auto-vs-manual)
-  - [Ecosystem Components](#ecosystem-components)
-  - [How to Install](#how-to-install)
-  - [The 3 AM Promise](#the-3-am-promise)
-
----
-
-# 🇧🇷 Português
-
-## O Problema: O Pânico das 3h da Manhã
-Você conhece essa cena.
-
-São 3h da manhã. Seu telefone vibra violentamente na cabeceira da cama. É o monitoramento. "ALERTA CRÍTICO: CPU acima de 90% no servidor de produção." Seu coração dispara. Você levanta cambaleando, abre o laptop com os olhos ardendo de sono, acessa o dashboard, e... o sistema já voltou ao normal. Foi um pico de 5 segundos. Ou um deploy mal feito que já foi rollbackado. Ou simplesmente um falso alarme.
-
-**O problema não é a falha. O problema é a ineficiência do alerta.** Você perdeu o sono, perdeu a concentração no dia seguinte, perdeu a confiança na ferramenta e, pior de tudo: **perdeu a confiança em si mesmo** para resolver problemas reais quando eles aparecerem.
-
-## A Solução: Um Sistema Imunológico, Não um Pager
-O **Amphi / KORE Platform** não é mais uma ferramenta de monitoramento. É um **organismo digital autônomo**.
-
-Ele não apenas "observa" e "avisa". Ele:
-- **Observa** (no nível do Kernel, via eBPF).
-- **Orienta** (entende se é um ataque, um pico normal ou um vazamento).
-- **Decide** (baseado em regras que você define).
-- **Age** (corrige o problema sozinho, em nanossegundos).
-- **Notifica** (te avisa apenas quando você é realmente necessário).
-
-**Se o sistema pode resolver sozinho, ele resolve e te manda uma mensagem de manhã.**  
-**Se o sistema não pode resolver sozinho, ele contém o dano e te acorda com um relatório forense completo.**
-
-Você não é mais um bombeiro. Você é um arquiteto.
-
-## Arquitetura: Amphi é o Kernel, KORE é o Corpo
-O **Amphi** é o Sistema Nervoso e Imunológico que reside dentro do Kernel do Linux. Ele enxerga cada chamada de sistema (syscall), cada pacote de rede, cada instrução do processador e cada mudança de estado da memória.
-
-A **KORE Platform** é a camada funcional que vem **EMBUTIDA** dentro do Amphi. Ela é composta por módulos de alto nível que transformam o poder bruto do Kernel em serviços de negócio prontos para uso.
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    USER INTERFACE (React / Next.js)                         │
-│                    Admin Portal & Monitoring Dashboard                      │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                    KORE PLATFORM (User-Space Layer)                   │  │
-│  │                  (Nativamente compilada no runtime do Amphi)          │  │
-│  │  ┌───────────────┐  ┌───────────────┐  ┌───────────────────────────┐ │  │
-│  │  │  KORE AI      │  │  TENENTIS OS  │  │  LUME-GATEWAY             │ │  │
-│  │  │  LLM Agents   │  │  Multi-Tenant │  │  Rate Limit, Circuit Br.  │ │  │
-│  │  │  RAG Pipeline │  │  RLS/JSONB    │  │  GeoIP, Auth              │ │  │
-│  │  └───────────────┘  └───────────────┘  └───────────────────────────┘ │  │
-│  │  ┌───────────────────────────────────────────────────────────────────┐│  │
-│  │  │  DRIFTGUARD (Observabilidade Cognitiva / FinOps / GreenOps)       ││  │
-│  │  └───────────────────────────────────────────────────────────────────┘│  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                     │ (FFI / Zero-Copy IPC)                 │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                    AMPHI CORE (Kernel-Space Layer)                    │  │
-│  │                    O Sistema Imunológico Autônomo                     │  │
-│  │  ┌───────────────────────────────────────────────────────────────────┐│  │
-│  │  │  NERVES (eBPF/C)    │  FILTER (C++)    │  BRAIN (Mojo/IRL)      ││  │
-│  │  │  Syscall/Network/   │  Line-Rate       │  Behavioral Predictions││  │
-│  │  │  Disk Monitoring    │  Noise Reduction │  Zero-Day Detection     ││  │
-│  │  ├────────────────────┼──────────────────┼─────────────────────────┤│  │
-│  │  │  ENFORCER (Rust)   │  GHOST (Go)      │  MEMORY (TS/SQL)        ││  │
-│  │  │  Cgroups v2        │  MTD/Honeypots   │  Forensics "Black Box"  ││  │
-│  │  │  Throttling/Kill   │  Deception Ops   │  Digital Twin Replay    ││  │
-│  │  └───────────────────────────────────────────────────────────────────┘│  │
-│  │  🔒 HARDWARE ROOT OF TRUST (TPM 2.0 / HSM) - Fail-Closed Security    │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-## O Loop de Auto-Cura (OODA)
-O sistema opera em um ciclo fechado de **Observar, Orientar, Decidir, Agir e Notificar**.
-
-| Estágio | Componente | Ação |
-| :--- | :--- | :--- |
-| **1. Observar** | Amphi (Nerves/eBPF) & DriftGuard | Coleta dados brutos de hardware, rede e sistema. |
-| **2. Orientar** | Amphi (Brain/Mojo) & DriftGuard (ML) | Classifica a anomalia: ataque, vazamento de memória, pico de tráfego ou degradação de performance. |
-| **3. Decidir** | KORE (Decision Engine) | Consulta o arquivo `rules.yaml` e define se a ação será automática ou manual. |
-| **4. Agir** | Amphi (Enforcer/Rust) & Lume (Go) | Executa a ação: isola o processo (Cgroups), bloqueia o IP, reinicia o serviço ou escala o pod. |
-| **5. Notificar** | KORE (Telegram/Slack) | Envia uma mensagem com o nível de gravidade e o que foi feito. |
-
-## A Matriz de Decisão (Auto vs. Manual)
-O coração da promessa "3 AM" é o arquivo `rules.yaml`. Ele define exatamente quando o sistema age sozinho e quando ele te chama.
-
-| Nível | O que significa | Ação do Sistema | Notificação |
-| :--- | :--- | :--- | :--- |
-| **🟢 Baixo** | Pico de CPU rápido ou tráfego momentâneo. | **Ignora.** Nenhuma ação. | **(Silêncio)** |
-| **🟡 Médio** | Vazamento de memória lento ou degradação de performance. | **Auto-Cura.** Reinicia o Pod/Container ou escala horizontalmente. | `🟡 AUTO-CURADO: Pod X reiniciado às 14:32. Estabilidade recuperada.` |
-| **🔴 Alto** | Ataque ransomware, exfiltração de dados ou falha de segurança confirmada (Mojo com 95%+ de confiança). | **Auto-Contenção.** Isola o processo no Cgroups v2, bloqueia o IP no Lume e gera um snapshot forense. **Ação manual obrigatória.** | `🔴 AÇÃO MANUAL REQUERIDA: Ataque contido. IP X.X.X.X bloqueado. Execute 'amphi dump <id>' para análise.` |
-
-### Exemplo de `rules.yaml`:
-```yaml
-rules:
-  # Auto-Heal (Você nem vai saber que aconteceu)
-  - name: "Memory Leak Auto-Heal"
-    source: "driftguard"
-    condition: "memory_usage > 85% AND duration > 5min"
-    action: "restart_pod"
-    notification: "auto"
-
-  # Auto-Containment (Alerta, mas o problema está sob controle)
-  - name: "Ransomware Zero-Day"
-    source: "amphi"
-    condition: "mojo_confidence > 90% AND iops_spike > 1000%"
-    action: "isolate_process_and_block_ip"
-    notification: "manual"
-
-  # Manual Only (Você decide se age)
-  - name: "Suspicious API Call Pattern"
-    source: "lume-gateway"
-    condition: "rate_limit_exceeded AND geoip = 'unknown'"
-    action: "manual_review"
-    notification: "manual"
-```
-
-## Componentes do Ecossistema
-| Componente | Papel | Tecnologia |
-| :--- | :--- | :--- |
-| **Amphi (Kernel)** | Sistema Imunológico Autônomo. Monitora syscalls, rede, hardware e isola ameaças. | Rust, eBPF, C++, Mojo (AI) |
-| **KoreAI** | Inteligência Artificial com agentes autônomos e RAG (busca semântica). | Python, LangChain, Qdrant |
-| **Tenentis OS** | SaaS multi-tenant com isolamento absoluto de dados via RLS no PostgreSQL. | Node.js, PostgreSQL, Redis |
-| **Lume-Gateway** | Orquestrador de tráfego com rate limiting, circuit breaker e GeoIP. | Go |
-| **DriftGuard** | Observabilidade cognitiva, detecção de anomalias, FinOps e GreenOps. | Python, ML, Prometheus |
-| **Decision Engine** | Motor de regras que coordena a auto-cura e as notificações. | Python (Flask) + YAML |
-
-## Como Instalar
-A instalação do Amphi já inclui a KORE Platform. Basta um comando:
-
-```bash
-# Baixe o binário do Amphi
-curl -L https://amphi.io/install.sh | bash
-
-# Inicie o sistema (Kernel + KORE Platform)
-sudo amphi start
-
-# Verifique o status dos serviços
-amphi status --services
-```
-
-### Subindo o Ecossistema Completo com Docker:
-```bash
-git clone https://github.com/kauand3v/kore-platform
-cd kore-platform
-docker-compose -f docker-compose.ecosystem.yml up -d
-```
-
-## A Promessa das 3h
-**Antes:** Alarme toca. Você acorda em pânico. Abre o laptop. Olha os logs. Percebe que foi um falso alarme. Não consegue mais dormir.
-
-**Depois (Com Amphi/KORE):** O sistema detecta o pico. O Brain (Mojo) analisa e decide: "É apenas um pico de tráfego legítimo". O sistema **ignora** e **não te acorda**. De manhã, você toma seu café, abre o dashboard, e vê: *"3 alertas auto-resolvidos durante a noite. Nenhuma ação necessária."*
-
-**Se for grave:** O sistema isola o ataque, bloqueia o invasor e te acorda apenas com o problema já contido. Você resolve com calma, munido de um relatório forense completo.
-
-> **"Você não é mais um bombeiro. Você é um arquiteto."**
-
----
-
-# 🇺🇸 English
-
-## The Problem: The 3 AM Panic
-You know this scene.
-
-It's 3 AM. Your phone vibrates violently on the nightstand. "CRITICAL ALERT: CPU above 90% on production." Your heart races. You stumble out of bed, open your laptop, access the dashboard, and... the system is already back to normal. False alarm.
-
-**The problem is not the failure. The problem is the inefficiency of the alert.** You lost sleep, focus, and trust in the tool. Worst of all: you lost confidence in yourself to solve real problems when they appear.
-
-## The Solution: An Immune System, Not a Pager
-The **Amphi / KORE Platform** is not another monitoring tool. It is an **autonomous digital organism**.
-
-It doesn't just "observe" and "warn". It:
-- **Observes** (at the Kernel level, via eBPF).
-- **Orients** (understands if it's an attack, a normal spike, or a leak).
-- **Decides** (based on rules you define).
-- **Acts** (fixes the problem itself, in nanoseconds).
-- **Notifies** (only alerts you when you are truly needed).
-
-**If the system can resolve it alone, it does and sends you a message in the morning.**  
-**If the system cannot resolve it alone, it contains the damage and wakes you up with a full forensic report.**
-
-You are no longer a firefighter. You are an architect.
-
-## Architecture: Amphi is the Kernel, KORE is the Body
-**Amphi** is the Nervous and Immune System residing inside the Linux Kernel. It sees every system call, every network packet, every processor instruction, and every memory state change.
-
-The **KORE Platform** is the functional layer that comes **EMBEDDED** inside Amphi. It consists of high-level modules that transform the raw power of the Kernel into ready-to-use business services.
-
-*(Refer to the Portuguese section for the full architecture diagram)*
-
-## The Self-Healing Loop (OODA)
-The system operates on a closed-loop cycle of **Observe, Orient, Decide, Act, and Notify**.
-
-| Stage | Component | Action |
-| :--- | :--- | :--- |
-| **1. Observe** | Amphi (Nerves/eBPF) & DriftGuard | Collects raw data from hardware, network, and system. |
-| **2. Orient** | Amphi (Brain/Mojo) & DriftGuard (ML) | Classifies the anomaly: attack, memory leak, traffic spike, or performance degradation. |
-| **3. Decide** | KORE (Decision Engine) | Consults the `rules.yaml` file and determines if the action is Automatic or Manual. |
-| **4. Act** | Amphi (Enforcer/Rust) & Lume (Go) | Executes the action: isolates the process (Cgroups), blocks the IP, restarts the service, or scales the pod. |
-| **5. Notify** | KORE (Telegram/Slack) | Sends a message with the severity level and what was done. |
-
-## The Decision Matrix (Auto vs. Manual)
-The heart of the "3 AM" promise is the `rules.yaml` file. It defines exactly when the system acts alone and when it calls you.
-
-| Level | What it means | System Action | Notification |
-| :--- | :--- | :--- | :--- |
-| **🟢 Low** | Quick CPU spike or momentary traffic. | **Ignore.** No action. | **(Silence)** |
-| **🟡 Medium** | Slow memory leak or performance degradation. | **Auto-Heal.** Restarts the Pod/Container or scales horizontally. | `🟡 AUTO-HEALED: Pod X restarted at 14:32. Stability restored.` |
-| **🔴 High** | Ransomware attack, data exfiltration, or confirmed security failure (Mojo with 95%+ confidence). | **Auto-Containment.** Isolates the process in Cgroups v2, blocks the IP in Lume, and generates a forensic snapshot. **Manual action required.** | `🔴 MANUAL REQUIRED: Attack contained. IP X.X.X.X blocked. Run 'amphi dump <id>' for forensics.` |
-
-### `rules.yaml` Example:
-```yaml
-rules:
-  # Auto-Heal (You won't even know it happened)
-  - name: "Memory Leak Auto-Heal"
-    source: "driftguard"
-    condition: "memory_usage > 85% AND duration > 5min"
-    action: "restart_pod"
-    notification: "auto"
-
-  # Auto-Containment (Alert, but contained)
-  - name: "Ransomware Zero-Day"
-    source: "amphi"
-    condition: "mojo_confidence > 90% AND iops_spike > 1000%"
-    action: "isolate_process_and_block_ip"
-    notification: "manual"
-
-  # Manual Only (You decide)
-  - name: "Suspicious API Call Pattern"
-    source: "lume-gateway"
-    condition: "rate_limit_exceeded AND geoip = 'unknown'"
-    action: "manual_review"
-    notification: "manual"
-```
-
-## Ecosystem Components
-| Component | Role | Technology |
-| :--- | :--- | :--- |
-| **Amphi (Kernel)** | Autonomous Immune System. Monitors syscalls, network, hardware, and isolates threats. | Rust, eBPF, C++, Mojo (AI) |
-| **KoreAI** | Artificial Intelligence with autonomous agents and RAG (semantic search). | Python, LangChain, Qdrant |
-| **Tenentis OS** | Multi-tenant SaaS with absolute data isolation via RLS on PostgreSQL. | Node.js, PostgreSQL, Redis |
-| **Lume-Gateway** | Traffic orchestrator with rate limiting, circuit breaker, and GeoIP. | Go |
-| **DriftGuard** | Cognitive observability, anomaly detection, FinOps, and GreenOps. | Python, ML, Prometheus |
-| **Decision Engine** | Rules engine that coordinates self-healing and notifications. | Python (Flask) + YAML |
-
-## How to Install
-Installing Amphi already includes the KORE Platform. Just one command:
-
-```bash
-# Download the Amphi binary
-curl -L https://amphi.io/install.sh | bash
-
-# Start the system (Kernel + KORE Platform)
-sudo amphi start
-
-# Check the status of services
-amphi status --services
-```
-
-### Spinning up the Full Ecosystem with Docker:
-```bash
-git clone https://github.com/kauand3v/kore-platform
-cd kore-platform
-docker-compose -f docker-compose.ecosystem.yml up -d
-```
-
-## The 3 AM Promise
-**Before:** Alarm goes off. You wake up in panic. Open your laptop. Check the logs. Realize it's a false alarm. Can't sleep anymore.
-
-**After (With Amphi/KORE):** The system detects the spike. The Brain (Mojo) analyzes and decides: "It's just a legitimate traffic spike." The system **ignores** it and **doesn't wake you up**. In the morning, you have your coffee, open the dashboard, and see: *"3 auto-resolved alerts during the night. No action needed."*
-
-**If it's serious:** The system contains the attack, blocks the intruder, and only wakes you up with the problem already contained. You solve it calmly, armed with a full forensic report.
-
-> **"You are no longer a firefighter. You are an architect."**
-
----
-
-## 📫 Author / Autor
-**Kauan Oliveira** - Systems & Security Architect  
-[GitHub](https://github.com/kauand3v) | [LinkedIn](https://linkedin.com/in/kauand3v)
-
-## 📄 License / Licença
-Distributed under the MIT License. See `LICENSE` for more information.
-
----
-
-**Go ahead. Install Amphi. Sleep well.**  
-**Vá em frente. Instale o Amphi. Durma bem.**
-
----
-
-
-# Amphi: Future Features & Roadmap Expansion  
-## Novas Funcionalidades e Expansão do Roadmap  
-
-*A próxima geração do sistema imunológico autônomo – mais inteligente, portátil e conectado.*  
-*The next generation of the autonomous immune system – smarter, portable, and connected.*
-
----
-
-## 🧠 AI & Cognition | IA e Cognição
-
-### Explainable AI (XAI) integrado ao Brain  
-[EN] The Brain will generate human-readable justifications for its decisions (e.g., “Process attempted to read /etc/shadow after receiving data from an anomalous socket”), reinforcing the Glass Box philosophy and enabling faster manual validation.  
-[PT-BR] O Cérebro gerará justificativas legíveis por humanos para suas decisões (ex.: “O processo tentou ler /etc/shadow após receber dados de um socket anômalo”), reforçando a filosofia Glass Box e acelerando a validação manual.
-
-### Processamento de Linguagem Natural (NLP) para Inteligência de Ameaças  
-[EN] A new module will continuously scan CVEs, security blogs, APT reports, and automatically extract IOCs and behavioral patterns to generate new `rules.yaml` entries – turning unstructured threat intel into proactive defenses.  
-[PT-BR] Um novo módulo examinará continuamente CVEs, blogs de segurança e relatórios de APT para extrair automaticamente IOCs e padrões comportamentais, gerando novas entradas no `rules.yaml` – transformando inteligência de ameaças não estruturada em defesas proativas.
-
-### Aprendizado por Reforço Contínuo (Online RL)  
-[EN] The Brain will adjust its policies in real-time based on the success or failure of the Enforcer's actions, enabling continuous improvement without waiting for offline model updates.  
-[PT-BR] O Cérebro ajustará suas políticas em tempo real com base no sucesso ou falha das ações do Enforcer, permitindo melhoria contínua sem esperar por atualizações offline do modelo.
-
----
-
-## 🌐 Platform & Coverage | Plataforma e Cobertura
-
-### Amphi para Windows (via eBPF on Windows)  
-[EN] Porting the Nerves module to Windows using the emerging eBPF for Windows runtime, allowing deep syscall monitoring on NT-based systems and unified hybrid-cloud protection.  
-[PT-BR] Portabilidade do módulo Nerves para Windows utilizando o emergente runtime eBPF for Windows, permitindo monitoramento profundo de syscalls em sistemas baseados em NT e proteção unificada em ambientes híbridos.
-
-### Suporte Nativo a Kubernetes (Amphi Operator)  
-[EN] An Amphi Operator will automatically inject eBPF hooks into every cluster node and manage security policies via Custom Resource Definitions (CRDs), including invisible pod-level sidecar protection.  
-[PT-BR] Um Operador Amphi injetará automaticamente hooks eBPF em cada nó do cluster e gerenciará políticas de segurança via Custom Resource Definitions (CRDs), incluindo proteção invisível em nível de pod (sidecar).
-
-### Edge / IoT / ARM  
-[EN] Lightweight Amphi agent optimized for ARM architectures, bringing kernel-level immunity to IoT gateways, 5G edge, and autonomous vehicles.  
-[PT-BR] Agente Amphi leve e otimizado para arquiteturas ARM, levando imunidade em nível de kernel para gateways IoT, borda 5G e veículos autônomos.
-
----
-
-## 🛡️ Advanced Defenses & Response | Defesas Avançadas e Respostas
-
-### Roteamento Dinâmico de Cargas (Workload Shielding)  
-[EN] Under attack, the Ghost module will live-migrate legitimate applications to a safe node while the attacker remains trapped in the original host, which instantly turns into a real-time honeypot.  
-[PT-BR] Sob ataque, o módulo Ghost migrará ao vivo as aplicações legítimas para um nó seguro enquanto o atacante permanece preso no host original, que se transforma instantaneamente em um honeypot em tempo real.
-
-### Decepção como Serviço (Honey-Infrastructure)  
-[EN] Beyond fake ports, Amphi will spawn synthetic databases, REST endpoints, and entire containers filled with AI-generated data to maximize adversary engagement and delay.  
-[PT-BR] Além de portas falsas, o Amphi criará bancos de dados, endpoints REST e contêineres inteiros sintéticos preenchidos com dados gerados por IA para maximizar o engajamento e o atraso do adversário.
-
-### Hack‑back Controlado (Contra‑ataque Autorizado)  
-[EN] Under strict governance, Ghost will trace attack origins and launch passive, non-destructive probes to map adversarial infrastructure, aiding legal task forces.  
-[PT-BR] Sob estrita governança, o Ghost rastreará a origem do ataque e lançará probes passivos não destrutivos para mapear a infraestrutura adversária, auxiliando forças-tarefa legais.
-
-### Firewall Comportamental de Saída  
-[EN] The Brain will classify outbound connections not only by exfiltration patterns but by identifying known C2 destinations, DGA-generated domains, and covert channels.  
-[PT-BR] O Cérebro classificará conexões de saída não apenas por padrões de exfiltração, mas identificando destinos C2 conhecidos, domínios gerados por DGA e canais encobertos.
-
----
-
-## 📊 Operations, Compliance & Visualization | Operações, Compliance e Visualização
-
-### Dashboard Unificado (Amphi Control Center)  
-[EN] A React‑based 3D swarm visualization with real-time heat maps, immunological health scores, and in-browser digital twin replay of incidents.  
-[PT-BR] Dashboard baseado em React com visualização 3D do enxame, mapas de calor em tempo real, scores de saúde imunológica e replay de incidentes em gêmeo digital direto no navegador.
-
-### Relatórios Automáticos de Compliance  
-[EN] One-click generation of audit‑ready reports (GDPR Art. 33, NIS2, ISO 27001) with immutable forensic evidence anchored to a local blockchain ledger.  
-[PT-BR] Geração de relatórios prontos para auditoria (GDPR Art. 33, NIS2, ISO 27001) com evidências forenses imutáveis ancoradas em um ledger blockchain local.
-
-### Integração Total com SOAR  
-[EN] Bidirectional playbooks with Splunk SOAR, Cortex XSOAR, and others – Amphi becomes both a producer and consumer of orchestrated security actions.  
-[PT-BR] Playbooks bidirecionais com Splunk SOAR, Cortex XSOAR e outros – o Amphi se torna tanto produtor quanto consumidor de ações orquestradas de segurança.
-
----
-
-## 🔗 Ecosystem & Extensibility | Ecossistema e Extensibilidade
-
-### Amphi Marketplace / App Store  
-[EN] A community hub to publish detection modules written in AmphiLang, custom `rules.yaml` policies, and ready-to-use integrations – “custom vaccines” for everyone.  
-[PT-BR] Um hub comunitário para publicar módulos de detecção escritos em AmphiLang, políticas `rules.yaml` personalizadas e integrações prontas – “vacinas customizadas” para todos.
-
-### Modo Sandbox para Desenvolvedores  
-[EN] An isolated simulation environment where security teams can test new attacks and rules using the Cerberus-Core in simulated mode with containers – zero risk.  
-[PT-BR] Ambiente de simulação isolado onde times de segurança podem testar novos ataques e regras usando o Cerberus-Core em modo simulado com contêineres – risco zero.
-
-### AmphiLens – Extensão para IDEs  
-[EN] Real-time verification while writing AmphiLang code: instant feedback on BPF Verifier compliance and optimization hints, right inside VS Code or JetBrains.  
-[PT-BR] Verificação em tempo real durante a escrita de código AmphiLang: feedback instantâneo sobre conformidade com o BPF Verifier e dicas de otimização, diretamente no VS Code ou JetBrains.
-
----
-
-## ⚙️ Performance & Hardware | Performance e Hardware
-
-### Aceleração por Hardware (SmartNIC / DPU)  
-[EN] Offload eBPF processing (XDP/TC) to smart NICs (Mellanox, Netronome) or DPUs (NVIDIA BlueField), freeing host CPU and enabling line-rate protection at 100 Gbps.  
-[PT-BR] Descarregar o processamento eBPF (XDP/TC) para SmartNICs (Mellanox, Netronome) ou DPUs (NVIDIA BlueField), liberando a CPU do host e permitindo proteção em velocidade de linha a 100 Gbps.
-
-### Compilação Ahead-of-Time para eBPF (CO-RE Universal)  
-[EN] Leverage BPF Type Format (BTF) to produce portable eBPF binaries that run across different Linux kernels without recompilation – drastically simplifying distribution.  
-[PT-BR] Utilizar BPF Type Format (BTF) para gerar binários eBPF portáveis que executam em diferentes kernels Linux sem recompilação – simplificando drasticamente a distribuição.
-
----
-
-## 🌍 Swarm Intelligence Avançada | Inteligência de Enxame Avançada
-
-### Enxame Multi‑tenant e Multi‑cloud  
-[EN] Federate swarms across partner organizations with differential privacy and zero-trust, creating a global “herd immunity” against zero-day threats – without exposing internal data.  
-[PT-BR] Federar enxames entre organizações parceiras com privacidade diferencial e zero-trust, criando uma “imunidade de rebanho” global contra ameaças zero‑day – sem expor dados internos.
-
-### Jogos Evolutivos para Defesa Coletiva  
-[EN] The Brain models the attacker as an adversarial agent in an evolutionary game; the swarm continuously learns optimal mitigation strategies through game theory.  
-[PT-BR] O Cérebro modela o atacante como um agente adversário em um jogo evolutivo; o enxame aprende continuamente estratégias ótimas de mitigação usando teoria dos jogos.
-
-### Provas de Conhecimento Zero (ZKP) na Troca de Vacinas  
-[EN] Nodes can prove they detected a real threat without revealing any incident details, using zero-knowledge proofs – critical for banks, hospitals, and high-compliance sectors.  
-[PT-BR] Nós podem provar que detectaram uma ameaça real sem revelar nenhum detalhe do incidente, usando provas de conhecimento zero – essencial para bancos, hospitais e setores de alta compliance.
-
----
-
-## 📍 Roadmap Integration  
-These capabilities are designed to be incrementally integrated into the existing Amphi architecture, extending each organ with new submodules. The vision remains: *never be woken up at 3 AM by a false alarm again.*  
-Essas capacidades foram projetadas para serem incrementalmente integradas à arquitetura existente do Amphi, estendendo cada órgão com novos submódulos. A visão permanece: *nunca mais ser acordado às 3h por um falso alarme.*
-
----
-
-## 🏛️ Diagrama de Arquitetura Completa
+| **Phase 1: Amphi Insight** | eBPF observability | Nerves probes; event collection; event transport via ring buffers; initial CLI; integration tests; initial benchmarks and a written threat model. | Planned |
+| **Phase 2: Behavioral Monitoring** | Understanding normal | Event correlation; behavioral baselines; anomaly detection; forensic event storage. | Planned |
+| **Phase 3: Controlled Enforcement** | Safe response | Rust Enforcer; cgroups v2 containment; permission model; recovery and rollback. | Planned |
+| **Phase 4: Cognitive Analysis** | Learning and explanation | Brain in Mojo; behavioral models; explainability; IRL research. | Research |
+| **Phase 5: Federated Defense** | Cooperation | Secure node communication; validated threat indicators; privacy-preserving sharing; Swarm Intelligence. | Research |
+
+Cerberus-Core, MorphBPF, and AmphiLang proceed as parallel research initiatives. They feed into the phases above when they reach a stage that can be tested.
+
+## Related Ecosystem
+
+The **KORE Platform** is a higher-level ecosystem of related projects that may integrate Amphi. It is separate from Amphi. These descriptions come from the author's earlier notes. None of these projects is included in or integrated with this repository, and no integration code exists here.
+
+| Project | Described role | Relationship to Amphi |
+| --- | --- | --- |
+| KORE Platform | Umbrella ecosystem for higher-level services. | Separate. May consume Amphi telemetry and decisions. |
+| KoreAI | AI agents and retrieval. | Related. Possible future integration. |
+| Tenentis OS | Multi-tenant SaaS platform. | Related. Not a dependency. |
+| Lume-Gateway | Traffic gateway (rate limiting, circuit breaking, GeoIP). | Related. Possible integration for network-side response. |
+| DriftGuard | Cognitive observability, FinOps, GreenOps. | Related. Possible telemetry source. |
+| Decision Engine | Rule-driven coordination of automated responses. | Placement undecided. See [Self-Healing and Decision Engine](#self-healing-and-decision-engine). |
 
 ```mermaid
-graph TB
-    subgraph UI["🖥️ User Interface"]
-        Dashboard["Admin Portal / Dashboard<br/>(React / Next.js)"]
+flowchart LR
+    subgraph AMPHI["Amphi: Linux security and observability core"]
+        A1["Nerves, Filter, Brain,<br/>Enforcer, Memory, Ghost,<br/>Orchestrator"]
     end
-
-    subgraph KORE["☁️ KORE PLATFORM (User-Space)"]
-        KoreAI["🧠 KoreAI<br/>LLM Agents / RAG"]
-        Tenentis["🏢 Tenentis OS<br/>Multi-Tenant RLS/JSONB"]
-        Lume["🚦 Lume-Gateway<br/>Rate Limit, Circuit Br., GeoIP"]
-        DriftGuard["📊 DriftGuard<br/>Observabilidade / FinOps / GreenOps"]
+    subgraph KORE["KORE Platform: related higher-level ecosystem"]
+        K1["KoreAI"]
+        K2["Tenentis OS"]
+        K3["Lume-Gateway"]
+        K4["DriftGuard"]
+        K5["Decision Engine"]
     end
-
-    subgraph Amphi["⚙️ AMPHI CORE (Kernel-Space)"]
-        direction TB
-        Nerves["🔍 NERVES (eBPF/C)<br/>Syscall/Network/Disk Monitoring"]
-        Filter["🧹 FILTER (C++)<br/>Line-Rate Noise Reduction"]
-        Brain["🧠 BRAIN (Mojo/IRL)<br/>Behavioral Predictions<br/>Zero-Day Detection"]
-        Enforcer["🛡️ ENFORCER (Rust)<br/>Cgroups v2 Throttling/Kill"]
-        Ghost["👻 GHOST (Go)<br/>MTD/Honeypots<br/>Deception Ops"]
-        Memory["💾 MEMORY (TS/SQL)<br/>Forensics 'Black Box'<br/>Digital Twin Replay"]
-    end
-
-    subgraph Hardware["🔒 HARDWARE ROOT OF TRUST"]
-        TPM["TPM 2.0 / HSM<br/>Fail-Closed Security"]
-    end
-
-    Dashboard --> KoreAI & Tenentis & Lume & DriftGuard
-    DriftGuard <--> Amphi
-    KoreAI -.-> Brain
-    Lume -.-> Ghost
-    Amphi --> Hardware
-    Enforcer -.-> TPM
+    KORE -. "planned integrations" .-> AMPHI
 ```
 
----
+## Technical Requirements
 
-## 🔁 Diagrama do Ciclo de Auto-Cura (Loop OODA)
+These are **design targets**. No build manifest in the repository verifies or enforces them.
 
-```mermaid
-graph TD
-    A["🔍 1. OBSERVE<br/>Amphi Nerves/eBPF + DriftGuard<br/>Coleta dados brutos"] --> B["🧭 2. ORIENT<br/>Brain/Mojo classifica anomalia<br/>(ataque, vazamento, pico, degradação)"]
-    B --> C{"⚖️ 3. DECIDE<br/>Decision Engine consulta rules.yaml"}
-    C -->|🟢 Baixo| D["Ignorar<br/>(Silêncio)"]
-    C -->|🟡 Médio| E["⚡ 4. ACT (Auto-Cura)<br/>Reiniciar Pod/Container<br/>Escalar horizontalmente"]
-    C -->|🔴 Alto| F["🛡️ 4. ACT (Auto-Contenção)<br/>Isolar processo (Cgroups v2)<br/>Bloquear IP (Lume)<br/>Gerar snapshot forense"]
-    E --> G["📬 5. NOTIFY<br/>🟡 AUTO-CURADO: Pod X reiniciado"]
-    F --> H["📬 5. NOTIFY<br/>🔴 AÇÃO MANUAL REQUERIDA<br/>Ataque contido. Execute 'amphi dump'"]
+| Requirement | Target and rationale |
+| --- | --- |
+| Operating system | Linux. |
+| Kernel | 5.8 or newer is the intended baseline, since BPF ring buffers (`BPF_MAP_TYPE_RINGBUF`) arrived in 5.8. Newer kernels are preferable. |
+| BTF | Kernel BTF (`CONFIG_DEBUG_INFO_BTF`) for CO-RE portability. |
+| Cgroups | Unified cgroup v2 hierarchy for the Enforcer. |
+| Privileges | Loading BPF programs and managing cgroups requires elevated privileges (root or specific capabilities). |
+| Toolchains by component | Clang/LLVM (eBPF in C), a C++ toolchain, Rust, Go, Node.js/TypeScript, Python 3, Mojo. Exact versions are not yet fixed. |
+| Optional | TPM 2.0 or HSM for attestation and key sealing. |
 
-    style A fill:#1f2937,stroke:#3b82f6,color:#fff
-    style B fill:#1f2937,stroke:#8b5cf6,color:#fff
-    style C fill:#1f2937,stroke:#f59e0b,color:#fff
-    style D fill:#065f46,stroke:#10b981,color:#fff
-    style E fill:#065f46,stroke:#10b981,color:#fff
-    style F fill:#7f1d1d,stroke:#ef4444,color:#fff
-    style G fill:#1e3a5f,stroke:#3b82f6,color:#fff
-    style H fill:#7f1d1d,stroke:#ef4444,color:#fff
-```
+## Building, Running, and Testing
 
----
+**There are currently no verified build, installation, run, or test procedures**, because the repository contains no implementation. The scripts under `scripts/`, the Dockerfiles, and the Helm chart are empty placeholders. This README deliberately provides no install command and no download URL. Any such command will be added only after it has been executed and verified.
 
-Aqui estão as explicações detalhadas para cada diagrama, em **Português (BR)** e **Inglês (US)**, prontas para serem coladas logo abaixo dos respectivos blocos Mermaid no seu README.
+Planned engineering gates for Phase 1:
 
----
+- A build system and a continuous-integration pipeline.
+- Integration tests that load probes on a matrix of kernel versions.
+- A reproducible benchmark harness that reports overhead against an uninstrumented baseline, with the workloads, hardware, and kernel version stated.
 
-## 📊 Explicação do Diagrama de Arquitetura
+## Research and Future Directions
 
-### 🇧🇷 Português
+The following ideas are collected from the project's earlier notes. All are Research unless stated.
 
-O diagrama de arquitetura do **Amphi** revela um organismo digital completo, dividido em três camadas fundamentais que cooperam para proteger infraestruturas críticas de forma autônoma.
+| Area | Direction | Notes |
+| --- | --- | --- |
+| Cognition | Explainable AI for Brain decisions | Core to the Glass Box principle. |
+| Cognition | NLP over CVEs and threat reports to propose detection rules | Output must be reviewed by humans before use. |
+| Cognition | Online reinforcement learning from enforcement outcomes | Risk of feedback loops and drift. |
+| Cognition | Game-theoretic modeling of attacker and defender | Speculative. |
+| Defense | Workload migration under attack (workload shielding) | Depends on orchestration platform support. |
+| Defense | Synthetic deception infrastructure (decoy databases, endpoints) | Extension of Ghost. |
+| Defense | Behavioral egress filtering (C2, DGA, covert channels) | Planned candidate for early Brain work. |
+| Defense | Passive attribution of attack origins | Active probing of third-party systems can be illegal. Any such feature requires legal review and is not committed. |
+| Platform | Kubernetes operator and CRD-based policy | Planned candidate after the core exists. |
+| Platform | ARM and edge targets | Dependent on kernel and PMC support. |
+| Platform | eBPF for Windows | Different runtime and capabilities; a separate effort. |
+| Performance | SmartNIC and DPU offload of XDP/TC | Throughput claims require measurement. |
+| Performance | CO-RE and BTF for portable binaries | Planned. |
+| Operations | Control center dashboard | Visualization and replay of incidents. |
+| Operations | Compliance reporting (for example GDPR, NIS2, ISO 27001) | Amphi could supply evidence for audits. It does not itself provide certification or compliance. |
+| Operations | Tamper-evident audit logging | A hash-chained log is the minimal form. |
+| Operations | SOAR integration | Bidirectional playbooks with external tools. |
+| Ecosystem | Detection module sharing; developer sandbox; IDE tooling for AmphiLang | Depends on AmphiLang maturing. |
+| Swarm | Cross-organization federation; zero-knowledge proofs of detection | Depends on a formal privacy model. |
 
-- **Interface de Usuário (topo):** O painel administrativo em React/Next.js oferece uma visão unificada de todo o ecossistema — da saúde do kernel às aplicações de negócio. É o centro de comando onde o arquiteto de segurança supervisiona, mas não precisa agir manualmente.
+## Contributing
 
-- **KORE Platform (User-Space):** Esta é a camada funcional que transforma o poder bruto do kernel em serviços empresariais prontos:
-  - **KoreAI** fornece inteligência artificial com agentes autônomos e busca semântica (RAG).
-  - **Tenentis OS** gerencia múltiplos inquilinos com isolamento absoluto de dados.
-  - **Lume-Gateway** orquestra o tráfego com rate limiting, circuit breaker e GeoIP.
-  - **DriftGuard** entrega observabilidade cognitiva, FinOps e GreenOps, além de alimentar o núcleo de detecção com telemetria contínua.
+The project is at the design stage and contributions are most useful as **technical review**. There is no contribution guide or issue template yet. Feedback is especially valuable on:
 
-- **AMPHI CORE (Kernel-Space):** O verdadeiro sistema imunológico, operando em nível de kernel via eBPF. Seus sete "órgãos" trabalham em conjunto:
-  - **Nerves (eBPF/C)** é a percepção: monitora cada syscall, pacote de rede e operação de disco sem latência perceptível.
-  - **Filter (C++)** é o sistema límbico: processa milhões de eventos por segundo e descarta o ruído, enviando apenas anomalias ao cérebro.
-  - **Brain (Mojo/IRL)** é a cognição adaptativa: utiliza aprendizado por reforço inverso para prever intenções maliciosas e detectar ameaças zero‑day.
-  - **Enforcer (Rust)** é a resposta imunológica: isola ou estrangula processos maliciosos via Cgroups v2, com segurança de memória garantida.
-  - **Ghost (Go)** é a decepção estratégica: rotação dinâmica de portas e honeypots que prendem o atacante enquanto o serviço real migra.
-  - **Memory (TS/SQL)** é a caixa-preta forense: armazena snapshots de memória e contexto de rede para replay em gêmeo digital.
+- the threat model and the correctness of the technical claims above;
+- eBPF probe design, overhead, and kernel-compatibility strategy;
+- benchmark methodology;
+- the AmphiLang and MorphBPF design questions.
 
-- **Hardware Root of Trust (TPM 2.0 / HSM):** A âncora de segurança física. Se o agente Amphi for adulterado, o sistema aciona um travamento em nível de hardware (Fail-Closed), tornando o nó inacessível.
+Please open an issue to start a discussion before sending a large change.
 
----
+## License
 
-### 🇺🇸 English
+No license file is currently included in this repository, and licensing terms have not been published yet.
 
-The Amphi architecture diagram reveals a complete digital organism, divided into three fundamental layers that cooperate to protect critical infrastructure autonomously.
+## Author
 
-- **User Interface (top):** The React/Next.js admin dashboard provides a unified view of the entire ecosystem — from kernel health to business applications. It is the command center where the security architect supervises but does not need to act manually.
-
-- **KORE Platform (User-Space):** This is the functional layer that transforms raw kernel power into business‑ready services:
-  - **KoreAI** delivers artificial intelligence with autonomous agents and semantic search (RAG).
-  - **Tenentis OS** manages multiple tenants with absolute data isolation.
-  - **Lume-Gateway** orchestrates traffic with rate limiting, circuit breaker, and GeoIP.
-  - **DriftGuard** provides cognitive observability, FinOps, and GreenOps while continuously feeding telemetry into the detection core.
-
-- **AMPHI CORE (Kernel-Space):** The true immune system, operating at kernel level via eBPF. Its seven “organs” work together:
-  - **Nerves (eBPF/C)** is perception: monitors every syscall, network packet, and disk operation with near‑zero latency.
-  - **Filter (C++)** is the limbic system: processes millions of events per second, discarding noise and forwarding only anomalies to the brain.
-  - **Brain (Mojo/IRL)** is adaptive cognition: uses inverse reinforcement learning to predict malicious intent and detect zero‑day threats.
-  - **Enforcer (Rust)** is the immune response: isolates or throttles malicious processes via Cgroups v2 with guaranteed memory safety.
-  - **Ghost (Go)** is strategic deception: dynamic port rotation and honeypots trap the attacker while the real service migrates.
-  - **Memory (TS/SQL)** is the forensic black box: stores memory snapshots and network context for digital twin replay.
-
-- **Hardware Root of Trust (TPM 2.0 / HSM):** The physical security anchor. If the Amphi agent is tampered with, a hardware‑level lock triggers (Fail‑Closed), rendering the node inaccessible.
-
----
-
-## 🔁 Explicação do Ciclo de Auto-Cura (Loop OODA)
-
-### 🇧🇷 Português
-
-O ciclo de auto-cura do Amphi é a realização prática da filosofia "nunca mais seja acordado às 3h". Ele implementa um loop contínuo de **OODA** (Observe, Orient, Decide, Act, Notify), eliminando a necessidade de intervenção humana para a maioria dos incidentes.
-
-1. **Observe (Observar):** Sensores no kernel (eBPF) e no user-space (DriftGuard) coletam dados brutos de hardware, rede e sistema — em tempo real e sem pontos cegos.
-
-2. **Orient (Orientar):** O Brain (Mojo) classifica a anomalia usando IA comportamental. Ele não busca assinaturas conhecidas; ele entende o contexto e a intenção: é um ataque, um vazamento de memória, um pico de vendas legítimo ou degradação de performance?
-
-3. **Decide (Decidir):** O Decision Engine consulta o arquivo `rules.yaml` — o coração da promessa das 3h. Ele define o que é **baixo** (ignorar), **médio** (auto-cura) ou **alto** (auto-contenção com notificação obrigatória).
-
-4. **Act (Agir):** A ação é instantânea:
-   - 🟢 **Baixo:** Nenhuma ação. O sistema nem notifica.
-   - 🟡 **Médio:** Auto-cura — reinicia o pod, escala recursos, resolve sozinho.
-   - 🔴 **Alto:** Auto-contenção — isola o processo no Cgroups v2, bloqueia o IP, gera um snapshot forense e **só então** notifica.
-
-5. **Notify (Notificar):** Você só é acionado se for realmente necessário. Para incidentes médios, recebe um resumo silencioso. Para incidentes graves, recebe um alerta com o problema **já contido** e um relatório forense completo — pronto para agir com calma, não em pânico.
-
-**A diferença fundamental:** você não é mais um bombeiro correndo atrás de alarmes. Você é o arquiteto de um organismo que se defende sozinho.
-
----
-
-### 🇺🇸 English
-
-The Amphi self-healing cycle is the practical realization of the “never be woken up at 3 AM” philosophy. It implements a continuous **OODA** loop (Observe, Orient, Decide, Act, Notify), eliminating human intervention for most incidents.
-
-1. **Observe:** Kernel‑level sensors (eBPF) and user‑space telemetry (DriftGuard) collect raw data from hardware, network, and system — in real time, with no blind spots.
-
-2. **Orient:** The Brain (Mojo) classifies the anomaly using behavioral AI. It does not look for known signatures; it understands context and intent: is it an attack, a memory leak, a legitimate sales spike, or performance degradation?
-
-3. **Decide:** The Decision Engine consults the `rules.yaml` file — the heart of the 3 AM promise. It defines what is **low** (ignore), **medium** (self‑heal), or **high** (auto‑containment with mandatory notification).
-
-4. **Act:** The response is immediate:
-   - 🟢 **Low:** No action. The system does not even notify.
-   - 🟡 **Medium:** Self‑heal — restarts the pod, scales resources, resolves itself.
-   - 🔴 **High:** Auto‑containment — isolates the process in Cgroups v2, blocks the IP, captures a forensic snapshot, and **only then** notifies.
-
-5. **Notify:** You are only contacted if truly necessary. For medium incidents, you receive a silent summary. For critical incidents, you get an alert with the problem **already contained** and a full forensic report — ready to act calmly, not in panic.
-
-**The fundamental difference:** you are no longer a firefighter chasing alarms. You are the architect of an organism that defends itself.
-
----
-
+**Kauan Oliveira**, Systems and Security Architect
+[github.com/kauand3v](https://github.com/kauand3v)
