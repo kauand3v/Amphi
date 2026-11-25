@@ -31,6 +31,7 @@
 - [The Vision](#the-vision)
 - [Target Customers and Product Profiles](#target-customers-and-product-profiles)
 - [Built Environment and Civil Engineering](#built-environment-and-civil-engineering)
+- [Expansion Plan: Seven Capability Pillars](#expansion-plan-seven-capability-pillars)
 - [Design Principles](#design-principles)
 - [System Architecture](#system-architecture)
 - [Current MVP Architecture](#current-mvp-architecture)
@@ -86,6 +87,8 @@ The first implementation deliberately starts with Python, `psutil`, YAML, and a 
 
 Amphi is being designed as one shared platform with six market-specific profiles. The profiles are not six separate codebases. They are intended to reuse the same agent, detection, policy, response, and management foundations while enabling different defaults, integrations, workflows, and safety requirements.
 
+The market profiles describe **who Amphi is designed to serve**. The seven capability pillars in the [Expansion Plan](#expansion-plan-seven-capability-pillars) describe **what the platform may eventually do**. They are complementary views of the same product direction, not seven additional products or market segments.
+
 ### Relationship to KORE Platform
 
 Amphi is an independent infrastructure-security project. The KORE Platform is a separate, higher-level ecosystem that may integrate Amphi alongside other projects. KoreAI, Tenentis OS, Lume-Gateway, DriftGuard, and the Decision Engine are related projects, not dependencies of this repository. No integration with them is included in the current MVP.
@@ -122,6 +125,10 @@ Status labels used throughout this document:
 | Behavioral baselining and correlation | Detection engine | **Planned** | Current detection is threshold-based. |
 | Automated policy-driven response | Policy and response engines | **Planned** | The current monitor does not automatically suspend or kill processes. |
 | Forensic database and incident replay | Storage and forensics services | **Planned / Research** | Current evidence output is local JSONL logging only. |
+| Network monitoring | Platform-specific network telemetry | **Planned** | No dedicated network-event collector or network-security module is included in the current MVP. |
+| Endpoint file analysis and quarantine | Hashes, signatures, optional YARA, quarantine workflow | **Planned** | No file scanner, signature database, or quarantine implementation is included in the current MVP. |
+| Device identity and anti-tamper | Device registration, agent integrity, last-known contact, controlled remote lock | **Planned** | No device fleet identity, tamper-response, or remote-lock capability is included in the current MVP. |
+| Database Guardian | Database health and reliability connectors | **Planned** | No PostgreSQL, MySQL, SQL Server, MongoDB, Redis, or SQLite monitoring connector is included in the current MVP. |
 | Tests, CI, benchmarks | Python test tooling and CI | **Planned** | No committed automated test suite, CI pipeline, or performance benchmark is included in the current MVP. |
 
 ### Validation performed for the current MVP
@@ -355,6 +362,78 @@ The following are candidate integration directions, not implemented connectors:
 - sensor, instrumentation, and building-automation integrators.
 
 The first realistic entry point is **security and observability for construction-site and building IT/OT systems**. Structural-health analytics should follow through partnerships with structural engineers, sensor vendors, and instrumentation specialists.
+
+---
+
+## Expansion Plan: Seven Capability Pillars
+
+This section records the planned product expansion beyond the current Python MVP. The seven pillars are capability areas that should reuse the same CLI, agent, telemetry, event, alert, detection, policy, storage, and platform-adapter foundations. They are **not seven independent applications**, and the descriptions below do not mean that these capabilities are already implemented.
+
+| Pillar | Planned scope | Current status and boundary |
+|---|---|---|
+| **1. Advanced System Monitoring** | Host and operating-system health; CPU, memory, storage, and temperature where the platform exposes reliable readings; process and service inventory; resource trends; and selected system-integrity signals. | **Planned expansion.** The MVP currently collects limited process snapshots through `psutil`; it does not provide comprehensive hardware, service, or integrity monitoring. |
+| **2. Threat Detection** | Explainable rule-based detections, behavioral baselines, event correlation, contextual analysis, and alerts with severity, evidence, and calibrated confidence information. | **Partially implemented at a very limited level.** The MVP emits CPU/memory threshold events. These are resource anomalies, not proof of malicious activity. Behavioral analysis and correlation remain planned. |
+| **3. Endpoint Protection** | File inspection, cryptographic hashes, signature-based checks, optional future YARA integration, controlled quarantine, and detection of suspicious file or agent changes. | **Planned.** Manual process suspension/termination is not file quarantine or a complete endpoint-protection product. Amphi will not claim antivirus or EPP/EDR equivalence without validated coverage, update handling, false-positive controls, and recovery tests. |
+| **4. Network Security** | Active-connection and listening-port visibility, network-service inventory, identification of supported devices, detection of suspicious communication patterns, and network-behavior alerts. | **Planned.** The current MVP has no dedicated network-event collector or network-defense module. Platform-specific collection and permission limits must be documented. |
+| **5. Incident Response** | Event and incident timelines, evidence collection, technical reports, controlled response workflows, and an auditable record of operator and agent actions. | **Partially supported only by basic building blocks.** The MVP writes local JSONL events and exposes manual process-containment commands; it has no incident-management workflow, evidence database, or automated response engine. |
+| **6. Anti-Theft & Device Security** | Device identity and registration, agent-tampering detection, suspicious configuration/change detection, last-known contact state, and policy-controlled remote lock where supported. | **Planned.** Remote actions would require a reachable device and an authenticated management channel. This is not GPS tracking, and Amphi cannot track or remotely lock a device that is powered off or offline. |
+| **7. Database & Infrastructure Reliability — Database Guardian** | Database availability and performance, connection health, host-resource context, replication lag, locks and deadlocks, backup execution and integrity, and operational RPO/RTO indicators. | **Planned.** Candidate connectors include PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis, and SQLite. No database connector or Database Guardian monitor is included in the current MVP. |
+
+### Shared platform architecture
+
+The expansion should extend one shared platform rather than create a separate engine for every pillar. The following are planned logical service boundaries; they describe responsibilities, not a claim that each service already exists as a separate module.
+
+| Shared component | Intended responsibility | Current implementation boundary |
+|---|---|---|
+| **Core Engine** | Coordinate application startup, lifecycle, module registration, and shared execution contracts. | The local Python CLI and daemon provide a narrow starting point; a generalized core engine is planned. |
+| **CLI** | Provide a consistent administrative interface for monitoring, security, policy, devices, databases, diagnostics, and incident workflows. | `start`, `status`, and `isolate` are the current command surface. The broader command groups are planned below. |
+| **Monitoring Engine** | Collect and normalize supported system, process, service, network, filesystem, hardware, and database signals. | Limited process snapshots through `psutil` are implemented; the other collection domains are planned. |
+| **Event Engine** | Define a versioned event schema and process events through a consistent pipeline. | Basic structured threshold events and JSONL output exist; a dedicated normalized event pipeline is planned. |
+| **Alert Engine** | Apply alert rules, cooldowns, routing, and notification integrations. | Local threshold logging and cooldown behavior exist; notification routing and integrations are planned. |
+| **Detection Engine** | Evaluate thresholds, rules, behavioral signals, correlations, and context. | CPU/memory threshold detection only; behavioral detection and correlation are planned. |
+| **Policy Engine** | Decide which actions are allowed for a deployment, asset, workload, and operator. | The proposed `observe`, `balanced`, `restricted`, and `enforce` profiles are not implemented in the MVP. |
+| **Agent System** | Manage local agent lifecycle, identity, health, enrollment, and communication. | A local daemon exists; remote enrollment, fleet management, and authenticated agent communication are planned. |
+| **Storage Layer** | Store local events, historical telemetry, incident context, and evidence according to retention policy. | Local rotating JSONL logs exist; database-backed history and forensic storage are planned. |
+| **Platform Adapters** | Encapsulate operating-system-specific telemetry and response capabilities behind shared interfaces. | Linux and Windows process-monitoring adapters currently share `psutil`; native collectors and broader response adapters are planned. |
+| **Database Connectors** | Integrate supported database engines through explicit, least-privilege connectors. | Planned; no database connectors are currently included. |
+
+### Planned CLI expansion
+
+The CLI is intended to remain the main operational interface. The following command roots are a **proposed future command surface**, not commands available in the current release.
+
+| Area | Planned command groups |
+|---|---|
+| System and operations | `amphi system`, `amphi monitor`, `amphi process`, `amphi services`, `amphi network`, `amphi diagnostics`, `amphi config` |
+| Security and protection | `amphi security`, `amphi detection`, `amphi antivirus`, `amphi quarantine`, `amphi integrity`, `amphi policy` |
+| Alerts and investigation | `amphi alerts`, `amphi logs`, `amphi incident`, `amphi assessment` |
+| Device and data reliability | `amphi device`, `amphi database` |
+
+Command groups should be introduced only when their underlying functionality, permissions, output contracts, and tests exist. In particular, the proposed `amphi antivirus` namespace must not be interpreted as a claim that Amphi currently provides a complete antivirus engine. The existing `amphi isolate <PID>` command remains a manual process-control operation; it is not host or network isolation.
+
+### Expansion and safety boundaries
+
+- Build shared telemetry, event, alert, policy, and storage contracts before adding many specialized modules.
+- Keep platform-specific collection behind Linux and Windows adapters; do not imply feature parity where the underlying operating systems expose different capabilities.
+- Keep new detections in observation or dry-run mode until their accuracy and operational impact have been measured.
+- Treat quarantine, remote device lock, process termination, and database-affecting operations as sensitive actions requiring explicit authorization, audit records, and recovery procedures.
+- Keep Database Guardian focused on availability, operational health, and evidence. Database connectors must begin with least-privilege, read-only access wherever possible.
+- For physical infrastructure and OT environments, retain the read-only-first and human-authorization boundaries described in [Built Environment and Civil Engineering](#built-environment-and-civil-engineering).
+
+### Planned product expansion sequence
+
+The following sequence is the product-level rollout proposed for the expansion plan. It is a set of future workstreams, not a statement that the phases are underway or complete. It is separate from the dependency-driven engineering roadmap later in this README; the two views are related, but their phase numbers do not correspond one-to-one.
+
+| Product phase | Focus | Planned deliverables | Status |
+|---|---|---|---|
+| **Phase 1 — Core & Professional CLI** | Establish the reusable platform foundation. | Modular core boundaries; professional Typer/Rich CLI; functional command groups as their modules become ready; configuration; logging; diagnostics. | Planned; the existing MVP provides only a narrow starting point. |
+| **Phase 2 — Advanced Monitoring** | Expand host and infrastructure visibility. | The ten monitoring domains described above; Linux and Windows capability coverage; normalized metrics and events; configurable alerts. | Planned. |
+| **Phase 3 — Threat Detection & Response** | Move from isolated thresholds toward contextual findings and controlled workflows. | Detection engine; event correlation; behavioral analysis; incident history and initial response workflows. | Planned. |
+| **Phase 4 — Endpoint Protection** | Add file-oriented protection capabilities. | File scanner; signature and hash checks; controlled quarantine; integrity protection. | Planned. |
+| **Phase 5 — Database Guardian** | Add database and infrastructure reliability monitoring. | Database connectors; availability and performance monitoring; backup monitoring; integrity and replication checks. | Planned. |
+| **Phase 6 — Anti-Theft & Device Security** | Protect device identity and management boundaries. | Device management; tamper detection; lock policies; authenticated remote communication. | Planned. |
+| **Phase 7 — Security Assessment & Advanced Incident Response** | Support authorized security review and deeper investigations. | Authorized security audits; configuration assessments; vulnerability reports; incident investigation and advanced response workflows. | Planned. |
+
+A command group or roadmap item should be considered delivered only when its implementation, permissions, tests, operational limitations, and documentation are present. The phase sequence does not override the safety requirements for critical workloads, device reachability, database access, or OT integrations.
 
 ---
 
@@ -619,6 +698,32 @@ Amphi currently targets Linux and Windows. macOS and other operating systems are
 ## Policy and Detection Model
 
 A shared Policy Engine is central to serving different customers safely. Detection should describe what was observed; policy should decide what action, if any, is allowed.
+
+### Planned monitoring domains
+
+The long-term monitoring model is intended to cover the following domains through reusable collectors and platform adapters. These are capability targets, not a description of current MVP coverage.
+
+| Domain | Planned coverage | Current MVP status |
+|---|---|---|
+| **System monitoring** | Operating-system health and selected system state. | Limited process snapshots only. |
+| **Process monitoring** | Process identity, resource use, lifecycle, and supported metadata. | CPU, memory percentage, PID/name, and open-file count snapshots are implemented. |
+| **Network monitoring** | Connections, listeners, ports, network services, and selected communication events. | Not implemented. |
+| **Filesystem monitoring** | File activity and selected integrity changes. | Event-level file monitoring is not implemented; open-file count is only a snapshot. |
+| **Service monitoring** | Service inventory, state, and relevant lifecycle events. | Not implemented. |
+| **Security monitoring** | Security-relevant host events and configuration signals. | Not implemented as a dedicated collector. |
+| **Resource monitoring** | CPU, memory, disk, and supported hardware/resource indicators. | Per-process CPU and memory percentage snapshots are implemented; broader host and disk monitoring is planned. |
+| **Integrity monitoring** | Changes to selected files, configurations, and Amphi components. | Not implemented. |
+| **Environment monitoring** | Deployment, workload, container, and environment context. | Not implemented. |
+| **Hardware monitoring** | Supported temperature, device, and hardware telemetry. | Not implemented. Availability will depend on operating system, hardware, permissions, and drivers. |
+
+### Planned detection methods
+
+| Method | Intended use | Status |
+|---|---|---|
+| **Threshold detection** | Compare measurements with configured limits and emit explainable events. | Implemented for configured per-process CPU and memory thresholds. |
+| **Behavioral detection** | Compare activity with workload-specific baselines and identify meaningful deviations. | Planned. |
+| **Event correlation** | Combine independent signals into richer findings and incident context. | Planned. |
+| **Contextual analysis** | Interpret signals using process identity, service role, asset criticality, environment, and policy. | Planned. |
 
 ### Detection maturity levels
 
@@ -976,7 +1081,7 @@ Differential Privacy may be evaluated for specific aggregate-data use cases, but
 
 ## Development Roadmap
 
-The roadmap is dependency-driven. The six customer profiles should be built on the same core rather than developed as separate products.
+The roadmap is dependency-driven. The six customer profiles should be built on the same core rather than developed as separate products. The seven capability pillars are product-level workstreams, while the phases below describe the engineering foundations and dependencies needed to support them. A pillar may span multiple phases; the pillar count is not a second phase numbering system.
 
 | Phase | Focus | Main deliverables | Status |
 |---|---|---|---|
@@ -998,6 +1103,10 @@ The roadmap is dependency-driven. The six customer profiles should be built on t
 4. Add agent identity and a minimal secure management protocol before building a large dashboard.
 5. Validate the MSP/MSSP workflow first, because multi-tenancy and fleet management create reusable foundations for the other customer segments.
 6. Approach the Built Environment vertical through construction-site and building IT/OT security first; add structural-health data only with engineering and sensor-integration partners.
+
+### Relationship to the product expansion sequence
+
+The engineering roadmap above prioritizes shared foundations such as cross-platform validation, telemetry contracts, detection, identity, and controlled response. The separate [Planned product expansion sequence](#planned-product-expansion-sequence) organizes the larger feature set into seven product workstreams. Database Guardian and device security depend on the same shared foundations and should not be started as isolated modules before their access, identity, and safety contracts are defined.
 
 ---
 
@@ -1028,7 +1137,7 @@ flowchart LR
         K4[DriftGuard]
         K5[Decision Engine]
     end
-    KORE -. Potential integrations .- AMPHI
+    KORE -. Potential integrations .-> AMPHI
 ```
 
 ---
@@ -1281,6 +1390,13 @@ amphi/
 │   │   ├── mqtt/
 │   │   ├── opc_ua/
 │   │   └── modbus/
+│   ├── databases/
+│   │   ├── postgresql/
+│   │   ├── mysql/
+│   │   ├── sqlserver/
+│   │   ├── mongodb/
+│   │   ├── redis/
+│   │   └── sqlite/
 │   └── bim/
 │
 ├── storage/
