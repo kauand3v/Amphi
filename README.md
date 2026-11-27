@@ -10,7 +10,7 @@
 
 *Stop building walls. Start growing organisms.*
 
-**Cross-platform infrastructure monitoring, threat detection, and controlled response.**
+**Cross-platform infrastructure monitoring, threat detection, platform observability, and controlled response.**
 
 
 ---
@@ -36,6 +36,7 @@
 - [System Architecture](#system-architecture)
 - [Current MVP Architecture](#current-mvp-architecture)
 - [Long-Term Core Components](#long-term-core-components)
+- [DriftGuard — AIOps and Platform Observability](#driftguard--aiops-and-platform-observability)
 - [Cross-Platform Strategy](#cross-platform-strategy)
 - [Policy and Detection Model](#policy-and-detection-model)
 - [Amphi Control Plane](#amphi-control-plane)
@@ -71,13 +72,14 @@ Amphi is a cross-platform infrastructure security project designed around a long
 
 The project aims to evolve from a lightweight host-monitoring agent into an **autonomous, behavioral, explainable, and policy-controlled infrastructure protection platform** for Linux and Windows environments.
 
-Amphi is not intended to be just another metrics dashboard or a conventional signature-based antivirus. Its intended capabilities bring together five areas:
+Amphi is not intended to be just another metrics dashboard or a conventional signature-based antivirus. Its intended capabilities bring together six connected areas:
 
 1. **System telemetry:** observe processes and, over time, relevant operating-system, file, network, kernel, and workload activity.
 2. **Behavioral detection:** identify unusual or suspicious activity using explicit rules, contextual correlation, and eventually calibrated behavioral models.
-3. **Controlled response:** support proportionate actions, from alerting to constrained execution or isolation, with human approval for high-impact operations.
-4. **Forensic context:** preserve event history and decision evidence so incidents can be investigated instead of relying only on alerts.
-5. **Infrastructure-wide coordination:** manage agents, policies, incidents, and customer environments through a central control plane.
+3. **Platform observability and AIOps:** analyze metrics, logs, traces, service behavior, and infrastructure-cost signals to identify degradation patterns and support incident diagnosis. This is the planned role of the DriftGuard module.
+4. **Controlled response:** support proportionate actions, from alerting to constrained execution or isolation, with human approval for high-impact operations.
+5. **Forensic context:** preserve event history and decision evidence so incidents can be investigated instead of relying only on alerts.
+6. **Infrastructure-wide coordination:** manage agents, policies, incidents, and customer environments through a central control plane.
 
 The first implementation deliberately starts with Python, `psutil`, YAML, and a small CLI/daemon architecture. Native Linux and Windows telemetry technologies are future extension points, not capabilities claimed by the current MVP.
 
@@ -87,11 +89,11 @@ The first implementation deliberately starts with Python, `psutil`, YAML, and a 
 
 Amphi is being designed as one shared platform with six market-specific profiles. The profiles are not six separate codebases. They are intended to reuse the same agent, detection, policy, response, and management foundations while enabling different defaults, integrations, workflows, and safety requirements.
 
-The market profiles describe **who Amphi is designed to serve**. The seven capability pillars in the [Expansion Plan](#expansion-plan-seven-capability-pillars) describe **what the platform may eventually do**. They are complementary views of the same product direction, not seven additional products or market segments.
+The market profiles describe **who Amphi is designed to serve**. The seven capability pillars in the [Expansion Plan](#expansion-plan-seven-capability-pillars) describe **what the platform may eventually do**. They are complementary views of the same product direction, not seven additional products or market segments. DriftGuard is a cross-cutting intelligence module that strengthens several existing pillars; it is not an eighth pillar or a separate product codebase.
 
 ### Relationship to KORE Platform
 
-Amphi is an independent infrastructure-security project. The KORE Platform is a separate, higher-level ecosystem that may integrate Amphi alongside other projects. KoreAI, Tenentis OS, Lume-Gateway, DriftGuard, and the Decision Engine are related projects, not dependencies of this repository. No integration with them is included in the current MVP.
+Amphi is an independent infrastructure-security project. The KORE Platform is a separate, higher-level ecosystem that may integrate Amphi alongside other projects. KoreAI, Tenentis OS, Lume-Gateway, and the Decision Engine remain related projects, not dependencies of this repository. The original DriftGuard concept is being incorporated into Amphi as the planned AIOps and Platform Observability module described below; it is no longer treated as a separate product dependency. No such integration is included in the current MVP.
 
 ---
 
@@ -129,6 +131,9 @@ Status labels used throughout this document:
 | Endpoint file analysis and quarantine | Hashes, signatures, optional YARA, quarantine workflow | **Planned** | No file scanner, signature database, or quarantine implementation is included in the current MVP. |
 | Device identity and anti-tamper | Device registration, agent integrity, last-known contact, controlled remote lock | **Planned** | No device fleet identity, tamper-response, or remote-lock capability is included in the current MVP. |
 | Database Guardian | Database health and reliability connectors | **Planned** | No PostgreSQL, MySQL, SQL Server, MongoDB, Redis, or SQLite monitoring connector is included in the current MVP. |
+| OpenTelemetry / OTLP ingestion | Distributed metrics, logs, and traces | **Planned** | No OTLP receiver, collector pipeline, or distributed-trace correlation is included in the current MVP. |
+| DriftGuard AIOps module | Temporal analysis, statistical/ML anomaly detection, incident context, RCA assistance, and FinOps correlation | **Planned / Research** | The module is a design direction only. No DriftGuard implementation, ML inference pipeline, Qdrant incident memory, GenAI RCA, or cloud-billing connector is included in the current MVP. |
+| Cloud-native integrations | Kubernetes, Istio/Envoy, Dapr, and GitOps systems | **Planned / Optional** | No Kubernetes, service-mesh, Dapr, ArgoCD, or Flux integration is included in the current MVP. These are optional environment-specific adapters, not core requirements. |
 | Tests, CI, benchmarks | Python test tooling and CI | **Planned** | No committed automated test suite, CI pipeline, or performance benchmark is included in the current MVP. |
 
 ### Validation performed for the current MVP
@@ -212,8 +217,9 @@ Amphi is intended to address six customer segments using a shared technical core
 - network and filesystem event collection;
 - container and Kubernetes context;
 - workload-aware detection policies;
-- API and observability integrations;
-- links between process events, service identity, container, and deployment metadata;
+- API and observability integrations, including a planned OpenTelemetry/OTLP ingestion path;
+- links between process events, service identity, container, distributed traces, and deployment metadata;
+- optional DriftGuard analysis for service-latency trends, anomaly context, and evidence-linked incident diagnosis;
 - response workflows that account for application availability.
 
 **Product direction:** infrastructure-aware host protection that can complement application observability and existing cloud security services.
@@ -229,6 +235,8 @@ Amphi is intended to address six customer segments using a shared technical core
 - agent heartbeat and offline buffering;
 - policy rollout and configuration drift visibility;
 - operational health and resource anomaly reporting;
+- optional service and cluster telemetry ingestion for compatible cloud-native workloads;
+- DriftGuard-based temporal analysis and cost correlation where the provider exposes suitable data;
 - staged upgrades and maintenance windows;
 - integration with existing infrastructure monitoring systems.
 
@@ -361,13 +369,13 @@ The following are candidate integration directions, not implemented connectors:
 - bridge, tunnel, and infrastructure operators;
 - sensor, instrumentation, and building-automation integrators.
 
-The first realistic entry point is **security and observability for construction-site and building IT/OT systems**. Structural-health analytics should follow through partnerships with structural engineers, sensor vendors, and instrumentation specialists.
+The first realistic entry point is **security and observability for construction-site and building IT/OT systems**. Structural-health analytics should follow through partnerships with structural engineers, sensor vendors, and instrumentation specialists. DriftGuard-derived time-series analysis may later help flag unusual sensor or building-system patterns, but it must not produce structural-safety verdicts.
 
 ---
 
 ## Expansion Plan: Seven Capability Pillars
 
-This section records the planned product expansion beyond the current Python MVP. The seven pillars are capability areas that should reuse the same CLI, agent, telemetry, event, alert, detection, policy, storage, and platform-adapter foundations. They are **not seven independent applications**, and the descriptions below do not mean that these capabilities are already implemented.
+This section records the planned product expansion beyond the current Python MVP. The seven pillars are capability areas that should reuse the same CLI, agent, telemetry, event, alert, detection, policy, storage, and platform-adapter foundations. They are **not seven independent applications**, and the descriptions below do not mean that these capabilities are already implemented. DriftGuard is a cross-cutting module that contributes advanced analysis to monitoring, threat detection, incident response, and infrastructure reliability; it does not add an eighth capability pillar.
 
 | Pillar | Planned scope | Current status and boundary |
 |---|---|---|
@@ -395,6 +403,7 @@ The expansion should extend one shared platform rather than create a separate en
 | **Agent System** | Manage local agent lifecycle, identity, health, enrollment, and communication. | A local daemon exists; remote enrollment, fleet management, and authenticated agent communication are planned. |
 | **Storage Layer** | Store local events, historical telemetry, incident context, and evidence according to retention policy. | Local rotating JSONL logs exist; database-backed history and forensic storage are planned. |
 | **Platform Adapters** | Encapsulate operating-system-specific telemetry and response capabilities behind shared interfaces. | Linux and Windows process-monitoring adapters currently share `psutil`; native collectors and broader response adapters are planned. |
+| **AIOps / DriftGuard Module** | Analyze normalized host and distributed-platform telemetry over time; produce anomaly findings, incident context, RCA hypotheses, and cost insights. | Planned / Research; no integrated AIOps pipeline exists in the current MVP. |
 | **Database Connectors** | Integrate supported database engines through explicit, least-privilege connectors. | Planned; no database connectors are currently included. |
 
 ### Planned CLI expansion
@@ -417,6 +426,8 @@ Command groups should be introduced only when their underlying functionality, pe
 - Keep new detections in observation or dry-run mode until their accuracy and operational impact have been measured.
 - Treat quarantine, remote device lock, process termination, and database-affecting operations as sensitive actions requiring explicit authorization, audit records, and recovery procedures.
 - Keep Database Guardian focused on availability, operational health, and evidence. Database connectors must begin with least-privilege, read-only access wherever possible.
+- Treat DriftGuard as an optional analytics module over shared telemetry contracts; do not make it a mandatory dependency of the Windows/Linux host agent.
+- Keep AIOps findings advisory until detection quality, false-positive rates, model drift, and operational impact are measured.
 - For physical infrastructure and OT environments, retain the read-only-first and human-authorization boundaries described in [Built Environment and Civil Engineering](#built-environment-and-civil-engineering).
 
 ### Planned product expansion sequence
@@ -461,9 +472,9 @@ A command group or roadmap item should be considered delivered only when its imp
 The target architecture has two cooperating planes and a set of domain profiles that consume shared services:
 
 1. **Agent and protection plane:** runs locally on Linux or Windows hosts, collects telemetry, evaluates local safeguards, and performs permitted actions.
-2. **Control plane:** manages agent identity, tenant boundaries, inventory, policies, incidents, operator permissions, and integrations.
+2. **Control plane:** manages agent identity, tenant boundaries, inventory, policies, incidents, operator permissions, and integrations. The optional DriftGuard module runs as an analytics service alongside this plane; it consumes forwarded or externally collected telemetry and returns findings through the control-plane API.
 
-Domain profiles—such as MSP/MSSP, Cloud/SaaS, Data Center, Financial, Critical Infrastructure, and Built Environment—configure these shared services for each deployment. Built Environment deployments may also ingest measurements from external sensor gateways; they do not make the host agent itself a structural sensor.
+Domain profiles—such as MSP/MSSP, Cloud/SaaS, Data Center, Financial, Critical Infrastructure, and Built Environment—configure these shared services for each deployment. Built Environment deployments may also ingest measurements from external sensor gateways; they do not make the host agent itself a structural sensor. DriftGuard must not become a runtime dependency for local Linux/Windows monitoring.
 
 The agent should remain capable of safe local operation if the control plane is temporarily unreachable. Central services should not be required for every telemetry sample or every local safety decision.
 
@@ -476,10 +487,13 @@ flowchart TB
         INV[Agent Inventory and Fleet]
         UI[Security Console]
         DB[(Central Event and Configuration Storage)]
+        DG[Optional DriftGuard AIOps Module]
         API --> TEN
         API --> POL
         API --> INV
         API --> DB
+        DB --> DG
+        DG --> API
         UI <--> API
     end
 
@@ -505,6 +519,7 @@ flowchart TB
     AG <-->|Authenticated agent channel - Planned| API
     FOR -->|Event forwarding - Planned| DB
     EXT[SIEM / SOAR / Observability Integrations - Planned] <--> API
+    OTEL[OpenTelemetry / Cloud-native telemetry - Optional] --> DG
 ```
 
 The diagram describes the target architecture. The current MVP implements only the local Python CLI/daemon, YAML configuration, process snapshot collection, threshold alerts, JSONL logs, and manual containment. It does not include the control plane, remote agent channel, central database, web console, or external integrations.
@@ -608,7 +623,7 @@ The original Amphi concept describes seven cooperating “organs”. They remain
 |---|---|---|
 | **Nerves** | Collect host, process, filesystem, network, and kernel telemetry through platform adapters. | Process snapshots via `psutil` exist; eBPF and ETW are planned. |
 | **Filter** | Normalize, enrich, deduplicate, sample, and route events. | Basic process dictionaries exist; a dedicated pipeline is planned. |
-| **Brain** | Behavioral baselines, anomaly assessment, correlation, and explanations. | Planned; advanced ML/IRL remains research. |
+| **Brain** | Behavioral baselines, anomaly assessment, correlation, and explanations. The planned DriftGuard module extends this capability to distributed platform telemetry and AIOps. | Planned; advanced ML/IRL and DriftGuard analytics remain unimplemented / research. |
 | **Enforcer** | Execute policy-approved, bounded response actions. | Manual Python suspend/kill exists; a policy-controlled response service is planned. |
 | **Memory** | Store event history, incident context, and forensic evidence. | Local rotating JSONL logs exist; database-backed forensics is planned. |
 | **Ghost** | Explore deception, decoys, and Moving Target Defense. | Research. |
@@ -657,6 +672,121 @@ Ghost explores decoy services, synthetic assets, rotating exposure, and traffic 
 ### Orchestrator — coordination
 
 The current Python daemon coordinates local configuration, monitoring, logging, and process lifecycle. The future Orchestrator/Control Plane will add agent registration, tenant and user management, policy delivery, incident workflows, approvals, and external integrations. High-volume local telemetry should not depend on a remote API being available.
+
+---
+
+## DriftGuard — AIOps and Platform Observability
+
+DriftGuard is being incorporated into Amphi as an **optional, cross-cutting AIOps and platform-observability module**. Its original standalone concept is retained as the internal name for this capability set; it is not a separate product dependency or a replacement for the Amphi host agent.
+
+The purpose of the module is to extend Amphi beyond host-level process monitoring into distributed application and cloud-native operations. It analyzes telemetry from Amphi agents and compatible external sources, identifies temporal deviations, correlates operational signals, and produces evidence-linked diagnostic hypotheses and recommendations.
+
+**Status: Planned / Research.** None of the DriftGuard capabilities described in this section is part of the current Amphi MVP. The design must be implemented incrementally and measured before being marketed as available.
+
+### Relationship to the existing Amphi architecture
+
+Amphi Core remains responsible for host agents, platform adapters, normalized events, policy, evidence, and controlled response. DriftGuard consumes selected normalized telemetry and adds deeper time-series and distributed-system analysis.
+
+The module should strengthen existing Amphi capability pillars rather than duplicate them:
+
+| Existing Amphi capability | DriftGuard contribution |
+|---|---|
+| Advanced System Monitoring | Analyze resource and service trends over time, including supported distributed telemetry. |
+| Threat Detection | Add statistical/ML anomaly signals and cross-signal context; an anomaly is not automatically a security verdict. |
+| Incident Response | Correlate metrics, logs, traces, and deployment context to produce investigation hypotheses. |
+| Database & Infrastructure Reliability | Correlate database or service degradation with host, workload, and infrastructure context. |
+| Control Plane and fleet management | Provide optional service, cluster, environment, and cost views for managed deployments. |
+
+DriftGuard is **not an eighth capability pillar**. It is an analytics module that may contribute to several existing pillars.
+
+### Planned capability groups
+
+| Capability | Intended behavior | Status and constraints |
+|---|---|---|
+| **Telemetry ingestion** | Receive supported metrics, logs, and traces through OpenTelemetry/OTLP and compatible collectors; optionally enrich with Kubernetes, Istio, Envoy, and application metadata. | Planned. No OTLP pipeline or cloud-native collector is present in the current MVP. “Zero instrumentation” is not assumed; coverage depends on the customer's existing telemetry sources and deployment. |
+| **Temporal normalization** | Normalize timestamps, resource attributes, service identity, units, and time windows; identify missing or stale samples and manage high-cardinality data. | Planned. Data quality and retention rules must be explicit. |
+| **Statistical anomaly analysis** | Establish workload-specific baselines and evaluate deviations using rolling statistics and calibrated thresholds. | Planned. A simple rule such as `x > μ + 3σ` may be one signal, not a universal detector; seasonality, skew, workload changes, and sample quality matter. |
+| **ML anomaly detection** | Evaluate methods such as Isolation Forest for multivariate or less obvious patterns. | Research until trained/evaluated against representative workloads and measured for false positives, false negatives, drift, and operating cost. “Zero-day drift detection” is not a guarantee. |
+| **Incident context and semantic retrieval** | Retrieve similar historical incident summaries and known remediation notes using embeddings and an optional vector store such as Qdrant. | Planned / optional. Vector similarity is contextual assistance, not proof of causation or an immutable audit record. The canonical evidence store remains under Amphi's storage and retention controls. |
+| **Root-cause analysis assistance** | Correlate metric changes with logs, distributed traces, deployment events, and service dependencies; use a local or approved LLM to summarize evidence and suggest investigation paths. | Planned. The module should output hypotheses with source references and uncertainty, not claim an LLM has conclusively identified root cause. |
+| **FinOps correlation** | Compare operational changes with cloud usage and billing data to flag unusual cost growth, inefficient resource use, and possible capacity issues. | Planned. Requires provider-specific, least-privilege, preferably read-only billing/usage integrations. No cloud billing connector exists in the MVP. |
+| **Controlled remediation** | Propose or, after explicit authorization, initiate bounded actions such as GitOps rollback, traffic shaping, or approved scaling changes. | Planned. Start with recommendations and human approval. No direct, autonomous production changes are enabled by the current MVP. |
+| **Shadow Mode and resilience testing** | Run detections in observation-only mode and test the analysis pipeline against synthetic or controlled failure scenarios. | Planned. Chaos experiments must be isolated, authorized, bounded, and never directed at production by default. |
+| **GreenOps and capacity forecasting** | Explore energy/carbon signals and longer-horizon capacity forecasts where reliable data exists. | Research. Estimates must disclose assumptions and must not be presented as measured facts without suitable sources. |
+
+### Logical processing pipeline
+
+```mermaid
+flowchart TD
+    HOST[Amphi Linux / Windows agents]
+    OTEL[OpenTelemetry Collector / OTLP]
+    CLOUD[Optional Kubernetes, Istio / Envoy, and cloud usage sources]
+    NORMALIZE[Telemetry normalization and temporal windows]
+    BASELINE[Statistical baselines]
+    ML[Optional evaluated ML anomaly models]
+    CONTEXT[Incident context and historical retrieval]
+    RCA[Evidence-linked RCA assistant]
+    FINDING[Findings and recommendations]
+    POLICY[Amphi Policy Engine and Control Plane]
+    HUMAN[Operator review and approval]
+    RESPONSE[Amphi Response / approved external action]
+    STORE[Amphi event and evidence storage]
+
+    HOST --> NORMALIZE
+    OTEL --> NORMALIZE
+    CLOUD --> NORMALIZE
+    NORMALIZE --> BASELINE --> ML
+    BASELINE --> CONTEXT
+    ML --> CONTEXT
+    CONTEXT --> RCA --> FINDING
+    NORMALIZE --> STORE
+    BASELINE --> STORE
+    FINDING --> STORE
+    FINDING --> POLICY --> HUMAN --> RESPONSE
+```
+
+This is a target design, not a description of an existing execution path. The module should use Amphi's shared event, identity, storage, and policy contracts rather than creating a parallel control plane or independent response authority.
+
+### Optional integrations
+
+The full DriftGuard concept includes technologies for different deployment environments. They should remain optional adapters, not mandatory dependencies for every Amphi customer.
+
+| Integration | Intended role | Boundary |
+|---|---|---|
+| **OpenTelemetry Collector / OTLP** | Standardized ingestion of metrics, logs, and traces. | Preferred initial integration direction; requires a defined receiver/exporter pipeline and authentication. |
+| **Kubernetes** | Workload, pod, node, deployment, and resource context. | Only for Kubernetes customers; no Kubernetes integration is currently implemented. |
+| **Istio / Envoy** | Service-mesh telemetry and, later, controlled traffic-management actions. | Optional; service-mesh-specific behavior must not be assumed in non-mesh environments. |
+| **Dapr** | Optional application communication/state integration where a customer already uses Dapr. | Not a universal observability transport and not required by the module. |
+| **Qdrant** | Similarity retrieval over selected historical incident summaries. | Optional; sensitive incident data requires tenant isolation, access controls, retention, and deletion policies. |
+| **Local LLM** | Summarize correlated logs and traces without sending them to an external provider. | Optional; model output remains untrusted and must be grounded in evidence. |
+| **Cloud billing APIs** | Read cloud usage and cost records for FinOps analysis. | Provider-specific, least-privilege access; no credentials or billing data are currently collected. |
+| **Argo CD / Flux** | GitOps-based deployment rollback or configuration change workflows. | Optional; begin with recommendations or pull requests, then approval-gated actions with audit and recovery. |
+
+NATS/JetStream, Dapr, and other messaging options may be evaluated for scale, but the module should first reuse the event transport selected by Amphi. Avoid adding multiple brokers before a measured throughput or delivery requirement justifies them.
+
+### Reliability, trust, and safety model
+
+- **Fail-safe separation:** if DriftGuard's analysis process, model, vector store, or external integration fails, the local Amphi host agent must continue its supported monitoring and logging behavior. The analytics module must not sit in a critical host request path.
+- **Shadow Mode first:** new detectors should produce advisory findings without taking action until their performance has been evaluated over representative data.
+- **Human-in-the-loop:** high-impact actions require explicit operator approval unless a narrowly scoped policy has been independently validated and authorized.
+- **Policy-mediated response:** DriftGuard may recommend an action, but the Amphi Policy Engine and Response component remain the authority for permission checks, protected assets, approvals, audit, rate limits, and recovery.
+- **Evidence-linked explanations:** every diagnosis should reference the relevant telemetry window, trace/log identifiers, model or rule version, and uncertainty. Similarity scores are not proof of causality.
+- **Least privilege:** service-mesh, Kubernetes, cloud billing, and GitOps credentials must be scoped to the minimum permissions required. Read-only access is the default for initial connectors.
+- **Privacy and tenant isolation:** logs, traces, billing records, and incident context may contain personal data, secrets, or business-sensitive information. Apply data minimization, access control, encryption, retention, and deletion.
+- **No unverified performance claims:** claims such as sub-millisecond overhead, zero-copy ingestion, or millions of metrics per second require reproducible benchmarks on a defined environment and workload. They are not current Amphi capabilities.
+- **No automatic chaos in production:** failure injection belongs in isolated, authorized test environments and must have explicit blast-radius limits.
+
+### Suggested implementation sequence
+
+1. **Telemetry contract:** define Amphi's normalized metric/event schema and receive a narrow set of OpenTelemetry data in a local development environment.
+2. **Shadow analytics:** implement time-window aggregation, data-quality checks, simple statistical baselines, and advisory findings. Compare them with static thresholds.
+3. **Measured ML:** evaluate Isolation Forest or another suitable method on representative datasets; publish false-positive, false-negative, latency, and resource-cost results before enabling it.
+4. **Incident context and RCA assistance:** add optional historical retrieval and evidence-linked summaries after storage, tenant boundaries, and redaction rules are defined.
+5. **FinOps and cloud-native adapters:** add read-only billing, Kubernetes, and service-mesh integrations only for a validated customer use case.
+6. **Controlled GitOps response:** start with recommendations or pull requests, then introduce approval-gated rollback or scaling actions with explicit policies, audit, and recovery tests.
+7. **Forecasting and GreenOps research:** consider longer-horizon capacity and sustainability analysis only when the underlying historical data and measurement sources are trustworthy.
+
+The implementation sequence depends on the shared foundations described in the [Development Roadmap](#development-roadmap). It does not change the current MVP status or make cloud-native technologies prerequisites for ordinary Linux and Windows monitoring.
 
 ---
 
@@ -1093,6 +1223,7 @@ The roadmap is dependency-driven. The six customer profiles should be built on t
 | **Phase 5 — Controlled Autonomous Response** | Safe action workflows | Approval gates, response engine, protected workloads, rate limits, rollback, audit trail, local/offline safeguards. | Planned |
 | **Phase 6 — Commercial Profiles** | Serve six target markets | MSP/MSSP, Cloud/SaaS, Data Center, Financial, Critical Infrastructure, and Built Environment policy bundles and workflows. | Planned |
 | **Phase 7 — Built Environment Integrations** | Connect digital and physical infrastructure data | Construction-site security and assets, building-system telemetry, read-only sensor ingestion, structural measurement normalization, BIM/asset context, and safety-reviewed engineering workflows. | Planned |
+| **Phase 8 — AIOps & Platform Observability (DriftGuard module)** | Add intelligence for distributed applications and cloud-native infrastructure | OpenTelemetry/OTLP ingestion, temporal normalization, statistical baselines, evaluated ML anomaly detection, incident-context retrieval, evidence-backed RCA assistance, optional FinOps connectors, and approval-gated GitOps integrations. | Planned / Research; depends on telemetry contracts, storage, identity, policy, and response foundations. |
 | **Research Track** | Advanced capabilities | Cerberus-Core, MorphBPF, AmphiLang, Ghost, TPM/HSM, hardware telemetry, Digital Twin Playback, and Swarm Intelligence. | Research |
 
 ### Recommended immediate priorities
@@ -1103,16 +1234,17 @@ The roadmap is dependency-driven. The six customer profiles should be built on t
 4. Add agent identity and a minimal secure management protocol before building a large dashboard.
 5. Validate the MSP/MSSP workflow first, because multi-tenancy and fleet management create reusable foundations for the other customer segments.
 6. Approach the Built Environment vertical through construction-site and building IT/OT security first; add structural-health data only with engineering and sensor-integration partners.
+7. Do not begin the full DriftGuard scope until normalized telemetry, event contracts, storage, and policy boundaries are stable. Start with OpenTelemetry ingestion and read-only Shadow Mode before adding ML, GenAI, FinOps, or remediation integrations.
 
 ### Relationship to the product expansion sequence
 
-The engineering roadmap above prioritizes shared foundations such as cross-platform validation, telemetry contracts, detection, identity, and controlled response. The separate [Planned product expansion sequence](#planned-product-expansion-sequence) organizes the larger feature set into seven product workstreams. Database Guardian and device security depend on the same shared foundations and should not be started as isolated modules before their access, identity, and safety contracts are defined.
+The engineering roadmap above prioritizes shared foundations such as cross-platform validation, telemetry contracts, detection, identity, and controlled response. The separate [Planned product expansion sequence](#planned-product-expansion-sequence) organizes the seven capability pillars. DriftGuard is a cross-cutting module rather than an additional pillar; its implementation track depends on the telemetry, event, storage, identity, policy, and response foundations. Database Guardian and device security should likewise not be started as isolated modules before their access, identity, and safety contracts are defined.
 
 ---
 
 ## Related Ecosystem
 
-The KORE Platform is a separate, higher-level ecosystem of related projects that may integrate Amphi. None of the following projects is included in or required by the current Amphi MVP.
+The KORE Platform is a separate, higher-level ecosystem of related projects that may integrate Amphi. None of the projects listed below is included in or required by the current Amphi MVP. DriftGuard is excluded from this table because its original concept is being incorporated as an internal Amphi module, not maintained here as a separate dependency.
 
 | Project | Described role | Potential relationship to Amphi |
 |---|---|---|
@@ -1120,7 +1252,6 @@ The KORE Platform is a separate, higher-level ecosystem of related projects that
 | KoreAI | AI agents and retrieval. | Possible future analysis or investigation integration. |
 | Tenentis OS | Multi-tenant SaaS platform. | Could provide related SaaS infrastructure, but is not an Amphi dependency. |
 | Lume-Gateway | Traffic gateway, rate limiting, circuit breaking, and GeoIP. | Possible network-side integration for authorized response. |
-| DriftGuard | Cognitive observability, FinOps, and GreenOps. | Possible telemetry or operational-context integration. |
 | Decision Engine | Rule-driven coordination of automated responses. | Placement and ownership remain undecided. |
 
 ```mermaid
@@ -1134,8 +1265,7 @@ flowchart LR
         K1[KoreAI]
         K2[Tenentis OS]
         K3[Lume-Gateway]
-        K4[DriftGuard]
-        K5[Decision Engine]
+        K4[Decision Engine]
     end
     KORE -. Potential integrations .-> AMPHI
 ```
@@ -1168,7 +1298,20 @@ flowchart LR
 | Resource containment | cgroups v2 and process signals | Windows process/job-object mechanisms, subject to design and testing |
 | Hardware trust | TPM 2.0 and measured boot where supported | TPM-backed platform capabilities where supported |
 
-These are future design directions, not installation requirements for the current MVP. Exact operating-system versions, kernel versions, privileges, and feature support must be specified when each native collector is implemented.
+### Optional requirements for the DriftGuard module
+
+| Area | Candidate technology | Purpose | Status / boundary |
+|---|---|---|---|
+| Telemetry ingestion | OpenTelemetry Collector and OTLP | Receive supported metrics, logs, and traces | Planned; optional integration, not an MVP requirement. |
+| Cloud-native context | Kubernetes, Istio, Envoy; Dapr where useful | Add workload, service, and traffic context | Planned; only for compatible customer environments. |
+| Statistical analysis | Python, NumPy, pandas | Rolling windows, baselines, and temporal normalization | Planned; requires data-quality and performance evaluation. |
+| ML anomaly detection | scikit-learn / Isolation Forest; PyOD as an option | Detect multivariate deviations that simple thresholds may miss | Research until validated against representative datasets. |
+| Incident memory | Qdrant or another vector store | Retrieve similar historical incident summaries | Optional; not the authoritative audit or evidence store. |
+| RCA assistance | Local LLM or approved external provider | Summarize correlated evidence and propose hypotheses | Planned; outputs must remain evidence-linked and reviewable. |
+| FinOps | Read-only cloud billing and usage APIs | Correlate operational changes with cloud costs | Planned; provider-specific adapters and least-privilege credentials required. |
+| Controlled remediation | Kubernetes API, Istio, ArgoCD, Flux | Propose or execute approved actions | Planned; Shadow Mode and human approval first. |
+
+These are optional future dependencies. The existing Linux/Windows Amphi MVP must remain useful without Kubernetes, Istio, Dapr, Qdrant, a local LLM, or cloud-billing credentials. Exact versions, permissions, supported providers, and deployment requirements must be specified when each connector is implemented.
 
 ---
 
@@ -1360,6 +1503,16 @@ amphi/
 │   ├── response/
 │   └── forensics/
 │
+├── modules/
+│   └── driftguard/             # Optional AIOps and platform-observability module
+│       ├── ingestion/
+│       ├── normalization/
+│       ├── detection/
+│       ├── incident_context/
+│       ├── rca/
+│       ├── finops/
+│       └── integrations/
+│
 ├── control_plane/
 │   ├── api/
 │   ├── tenants/
@@ -1423,6 +1576,9 @@ The existing `daemon/` package can be migrated into `agent/` and `core/` increme
 | Area | Direction | Notes |
 |---|---|---|
 | Behavioral analysis | Explainable baselines and anomaly scoring | Requires representative data and measured accuracy. |
+| AIOps / DriftGuard module | Distributed observability, temporal normalization, ML anomaly detection, incident similarity, and evidence-linked RCA assistance | Planned / Research; optional module over shared Amphi telemetry, not part of the current MVP. |
+| FinOps / GreenOps | Correlate infrastructure behavior with cloud cost and, later, energy/carbon signals | Planned research; requires billing/usage data and defensible measurement methods. |
+| GitOps remediation | Propose or trigger approved rollback and infrastructure changes | Planned; begin in Shadow Mode and require policy checks, human approval, audit, and rollback. |
 | Threat context | Enrichment from CVEs and threat reports | Suggested rules must be reviewed before enforcement. |
 | Network defense | Behavioral egress detection and C2-related indicators | Requires network telemetry and careful false-positive handling. |
 | Containers | Container runtime and Kubernetes context | Planned after the host agent foundations. |
